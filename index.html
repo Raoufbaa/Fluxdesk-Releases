@@ -1,912 +1,890 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fluxdesk - Ultra-Low Latency Remote Desktop</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fluxdesk - High-Performance Remote Desktop Solution</title>
+    <link rel="icon" type="image/jpeg" href="assets/icon.jpg" />
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
+        background: linear-gradient(180deg, #050e13, #0b0e10);
+        color: #ffffff;
+        overflow-x: hidden;
+        line-height: 1.6;
+      }
+
+      /* Animated Background Grid */
+      .background-grid {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        pointer-events: none;
+        overflow: hidden;
+        opacity: 0.3;
+      }
+
+      /* Static dotted squares background */
+      .grid-squares {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+
+      .square {
+        position: absolute;
+        width: 60px;
+        height: 60px;
+        border: 1px dotted rgba(255, 255, 255, 0.1);
+        background: transparent;
+      }
+
+      /* Animated lines */
+      .grid-lines {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+
+      .grid-line {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.12);
+        opacity: 0;
+        transition: opacity 0.3s ease;
+      }
+
+      .grid-line.horizontal {
+        height: 1px;
+        width: 60px;
+      }
+
+      .grid-line.vertical {
+        width: 1px;
+        height: 60px;
+      }
+
+      .grid-line.active {
+        opacity: 1;
+        background: rgba(255, 255, 255, 0.25);
+      }
+
+      .container {
+        position: relative;
+        z-index: 1;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 40px;
+      }
+
+      /* Progress Dots */
+      .progress-dots {
+        position: fixed;
+        right: 40px;
+        top: 50%;
+        transform: translateY(-50%);
+        z-index: 1000;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      .progress-dot {
+        width: 12px;
+        height: 12px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 3px;
+        position: relative;
+        transition: all 0.4s ease;
+        cursor: pointer;
+      }
+
+      .progress-dot::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 0%;
+        background: #ffffff;
+        transition: height 0.4s ease;
+      }
+
+      .progress-dot.active {
+        border-color: #ffffff;
+      }
+
+      .progress-dot.active::before {
+        height: 100%;
+      }
+
+      /* Hero Section */
+      .hero {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 60px 0;
+        position: relative;
+      }
+
+      .hero-content {
+        opacity: 0;
+        transform: translateY(30px);
+        animation: fadeInUp 1s ease forwards;
+      }
+
+      @keyframes fadeInUp {
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .logo-img {
+        width: 100px;
+        height: 100px;
+        border-radius: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      }
+
+      .hero h1 {
+        font-size: 4.5rem;
+        font-weight: 700;
+        margin-bottom: 20px;
+        letter-spacing: -0.03em;
+      }
+
+      .hero p {
+        font-size: 1.5rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 50px;
+        max-width: 700px;
+        margin-left: auto;
+        margin-right: auto;
+      }
+
+      .download-button {
+        display: inline-block;
+        padding: 20px 60px;
+        background: #ffffff;
+        color: #0b0e10;
+        font-size: 1.2rem;
+        font-weight: 600;
+        border-radius: 12px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 40px rgba(255, 255, 255, 0.15);
+      }
+
+      .download-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 50px rgba(255, 255, 255, 0.25);
+      }
+
+      /* Screenshot Section */
+      .screenshot-section {
+        padding: 100px 0;
+        opacity: 0;
+        transform: translateY(50px);
+        transition: all 0.8s ease;
+        position: relative;
+      }
+
+      .screenshot-section.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .screenshot-container {
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 24px;
+        padding: 50px;
+        backdrop-filter: blur(40px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      }
+
+      .screenshot-placeholder {
+        width: 100%;
+        height: 600px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        color: rgba(255, 255, 255, 0.3);
+        border: 2px dashed rgba(255, 255, 255, 0.1);
+      }
+
+      .screenshot {
+        width: 100%;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+      }
+
+      /* Feature Row */
+      .feature-row {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        padding: 100px 0;
+        opacity: 0;
+        transition: all 0.8s ease;
+        position: relative;
+      }
+
+      .feature-row.visible {
+        opacity: 1;
+      }
+
+      .feature-row.left .feature-content {
+        transform: translateX(-100px);
+      }
+
+      .feature-row.right .feature-content {
+        transform: translateX(100px);
+      }
+
+      .feature-row.visible .feature-content {
+        transform: translateX(0);
+      }
+
+      .feature-content {
+        display: flex;
+        align-items: center;
+        gap: 80px;
+        transition: transform 0.8s ease;
+      }
+
+      .feature-row.right .feature-content {
+        flex-direction: row-reverse;
+      }
+
+      .feature-text {
+        flex: 1;
+      }
+
+      .feature-text h2 {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 25px;
+        letter-spacing: -0.02em;
+      }
+
+      .feature-text p {
+        font-size: 1.3rem;
+        color: rgba(255, 255, 255, 0.6);
+        line-height: 1.8;
+        margin-bottom: 20px;
+      }
+
+      .feature-visual {
+        flex: 1;
+        background: rgba(255, 255, 255, 0.02);
+        border: 1px solid rgba(255, 255, 255, 0.05);
+        border-radius: 20px;
+        padding: 50px;
+        backdrop-filter: blur(30px);
+        min-height: 400px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .feature-placeholder {
+        width: 100%;
+        height: 350px;
+        background: rgba(255, 255, 255, 0.03);
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: rgba(255, 255, 255, 0.3);
+        border: 2px dashed rgba(255, 255, 255, 0.1);
+        font-size: 1.1rem;
+      }
+
+      .feature-image {
+        width: 100%;
+        border-radius: 12px;
+      }
+
+      /* Tech Section */
+      .tech-section {
+        padding: 120px 0;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(50px);
+        transition: all 0.8s ease;
+        position: relative;
+      }
+
+      .tech-section.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .section-title {
+        font-size: 3rem;
+        font-weight: 700;
+        margin-bottom: 60px;
+        letter-spacing: -0.02em;
+      }
+
+      .tech-grid {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 20px;
+      }
+
+      .tech-badge {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        padding: 16px 35px;
+        border-radius: 10px;
+        backdrop-filter: blur(20px);
+        font-size: 1.05rem;
+        color: rgba(255, 255, 255, 0.8);
+        font-weight: 500;
+        transition: all 0.3s ease;
+      }
+
+      .tech-badge:hover {
+        background: rgba(255, 255, 255, 0.06);
+        border-color: rgba(255, 255, 255, 0.15);
+      }
+
+      /* CTA Section */
+      .cta-section {
+        padding: 120px 0 150px;
+        text-align: center;
+        opacity: 0;
+        transform: translateY(50px);
+        transition: all 0.8s ease;
+        position: relative;
+      }
+
+      .cta-section.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      .cta-box {
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 24px;
+        padding: 80px 60px;
+        backdrop-filter: blur(40px);
+        max-width: 900px;
+        margin: 0 auto;
+      }
+
+      .cta-box h2 {
+        font-size: 2.8rem;
+        margin-bottom: 20px;
+        font-weight: 700;
+      }
+
+      .cta-box p {
+        font-size: 1.3rem;
+        color: rgba(255, 255, 255, 0.6);
+        margin-bottom: 40px;
+      }
+
+      /* Footer */
+      footer {
+        padding: 60px 0 40px;
+        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        text-align: center;
+        opacity: 0;
+        transition: opacity 0.8s ease;
+        position: relative;
+      }
+
+      footer.visible {
+        opacity: 1;
+      }
+
+      footer p {
+        color: rgba(255, 255, 255, 0.4);
+        font-size: 0.95rem;
+        margin-bottom: 15px;
+      }
+
+      footer a {
+        color: rgba(255, 255, 255, 0.6);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      footer a:hover {
+        color: rgba(255, 255, 255, 0.9);
+      }
+
+      /* Responsive */
+      @media (max-width: 1024px) {
+        .feature-content {
+          flex-direction: column !important;
+          gap: 50px;
         }
 
-        html {
-            scroll-behavior: smooth;
+        .feature-row.left .feature-content,
+        .feature-row.right .feature-content {
+          transform: translateY(-50px);
         }
 
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #000000;
-            color: #ffffff;
-            overflow-x: hidden;
+        .feature-row.visible .feature-content {
+          transform: translateY(0);
         }
 
-        /* Animated Stars */
-        .stars {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: -1;
+        .progress-dots {
+          right: 20px;
         }
+      }
 
-        .star {
-            position: absolute;
-            width: 2px;
-            height: 2px;
-            background: white;
-            border-radius: 50%;
-            animation: twinkle linear infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 0; }
-            50% { opacity: 1; }
-        }
-
-        /* Colorful Floating Particles */
-        .particle {
-            position: absolute;
-            animation: float linear infinite;
-            opacity: 0.6;
-        }
-
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) rotate(0deg);
-                opacity: 0;
-            }
-            10% {
-                opacity: 0.6;
-            }
-            90% {
-                opacity: 0.6;
-            }
-            100% {
-                transform: translateY(-100px) rotate(360deg);
-                opacity: 0;
-            }
-        }
-
-        /* Hero Section */
-        .hero {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 80px 5%;
-            position: relative;
-        }
-
-        .hero-container {
-            max-width: 1400px;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 100px;
-            align-items: center;
-        }
-
-        .hero-content {
-            animation: fadeInLeft 1s ease-out;
-        }
-
-        @keyframes fadeInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .hero-badge {
-            display: inline-block;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
-            border-radius: 50px;
-            margin-bottom: 30px;
-            letter-spacing: 0.5px;
-        }
-
+      @media (max-width: 768px) {
         .hero h1 {
-            font-size: clamp(50px, 10vw, 85px);
-            font-weight: 800;
-            margin-bottom: 30px;
-            line-height: 1.1;
-            color: #ffffff;
+          font-size: 2.8rem;
         }
 
-        .hero h1 .gradient-text {
-            background: linear-gradient(135deg, #a78bfa 0%, #ec4899 25%, #f59e0b 50%, #10b981 75%, #06b6d4 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-size: 200% auto;
-            animation: shimmer 3s linear infinite;
+        .hero p {
+          font-size: 1.2rem;
         }
 
-        @keyframes shimmer {
-            to {
-                background-position: 200% center;
-            }
+        .feature-text h2 {
+          font-size: 2rem;
         }
 
-        .hero .subtitle {
-            font-size: clamp(18px, 2.5vw, 22px);
-            color: #9ca3af;
-            margin-bottom: 50px;
-            line-height: 1.8;
+        .feature-text p {
+          font-size: 1.1rem;
         }
 
-        .cta-button {
-            display: inline-flex;
-            align-items: center;
-            gap: 12px;
-            padding: 20px 45px;
-            font-size: 18px;
-            font-weight: 600;
-            color: #000000;
-            background: linear-gradient(135deg, #a78bfa, #ec4899, #f59e0b);
-            background-size: 200% auto;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            text-decoration: none;
-            transition: all 0.3s;
-            animation: gradientShift 3s ease infinite;
+        .section-title {
+          font-size: 2.2rem;
         }
 
-        @keyframes gradientShift {
-            0%, 100% { background-position: left; }
-            50% { background-position: right; }
+        .container {
+          padding: 0 20px;
         }
 
-        .cta-button:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 20px 60px rgba(167, 139, 250, 0.4);
+        .cta-box {
+          padding: 60px 30px;
         }
 
-        .hero-stats {
-            display: flex;
-            gap: 50px;
-            margin-top: 60px;
+        .progress-dots {
+          display: none;
         }
-
-        .stat-number {
-            font-size: 42px;
-            font-weight: 800;
-            display: block;
-            margin-bottom: 5px;
-        }
-
-        .stat-1 .stat-number {
-            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stat-2 .stat-number {
-            background: linear-gradient(135deg, #ec4899, #f472b6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stat-3 .stat-number {
-            background: linear-gradient(135deg, #10b981, #34d399);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .stat-label {
-            font-size: 15px;
-            color: #6b7280;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .hero-visual {
-            position: relative;
-            animation: fadeInRight 1s ease-out;
-        }
-
-        @keyframes fadeInRight {
-            from {
-                opacity: 0;
-                transform: translateX(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .hero-logo {
-            width: 100%;
-            max-width: 400px;
-            height: auto;
-            border-radius: 30px;
-            animation: float-logo 4s ease-in-out infinite;
-            filter: drop-shadow(0 0 60px rgba(167, 139, 250, 0.5));
-        }
-
-        @keyframes float-logo {
-            0%, 100% { 
-                transform: translateY(0px);
-                filter: drop-shadow(0 0 60px rgba(167, 139, 250, 0.5));
-            }
-            50% { 
-                transform: translateY(-30px);
-                filter: drop-shadow(0 0 80px rgba(236, 72, 153, 0.6));
-            }
-        }
-
-        /* Content Sections */
-        .section {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            padding: 120px 5%;
-            position: relative;
-        }
-
-        .section-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 100px;
-            max-width: 1400px;
-            margin: 0 auto;
-            width: 100%;
-            align-items: center;
-        }
-
-        .section.reverse .section-content {
-            direction: rtl;
-        }
-
-        .section.reverse .section-content > * {
-            direction: ltr;
-        }
-
-        .section-text, .section-visual {
-            opacity: 0;
-            transform: translateY(80px);
-            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .section-text.reveal, .section-visual.reveal {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .section-number {
-            font-size: 16px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-        }
-
-        /* Different colors for each section */
-        .section:nth-child(2) .section-number {
-            color: #a78bfa; /* Purple */
-        }
-
-        .section:nth-child(3) .section-number {
-            color: #ec4899; /* Pink */
-        }
-
-        .section:nth-child(4) .section-number {
-            color: #06b6d4; /* Cyan */
-        }
-
-        .section:nth-child(5) .section-number {
-            color: #f59e0b; /* Orange */
-        }
-
-        .section:nth-child(6) .section-number {
-            color: #10b981; /* Green */
-        }
-
-        .section-text h2 {
-            font-size: clamp(40px, 7vw, 65px);
-            margin-bottom: 30px;
-            color: #ffffff;
-            line-height: 1.2;
-            font-weight: 800;
-        }
-
-        .section-text p {
-            font-size: 20px;
-            color: #9ca3af;
-            line-height: 1.8;
-            margin-bottom: 40px;
-        }
-
-        .feature-list {
-            list-style: none;
-        }
-
-        .feature-list li {
-            padding: 18px 0;
-            font-size: 18px;
-            color: #9ca3af;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .feature-list li i {
-            font-size: 20px;
-            min-width: 25px;
-        }
-
-        /* Different icon colors for each section */
-        .section:nth-child(2) .feature-list li i {
-            color: #a78bfa;
-        }
-
-        .section:nth-child(3) .feature-list li i {
-            color: #ec4899;
-        }
-
-        .section:nth-child(4) .feature-list li i {
-            color: #06b6d4;
-        }
-
-        .section:nth-child(5) .feature-list li i {
-            color: #f59e0b;
-        }
-
-        .section:nth-child(6) .feature-list li i {
-            color: #10b981;
-        }
-
-        .section-visual {
-            position: relative;
-            height: 500px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .section-visual::before {
-            content: '';
-            position: absolute;
-            font-family: 'Font Awesome 6 Free';
-            font-weight: 900;
-            font-size: 150px;
-            color: rgba(255, 255, 255, 0.02);
-            animation: pulse 3s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 0.02; }
-            50% { transform: scale(1.05); opacity: 0.04; }
-        }
-
-        .visual-1::before { content: '\f108'; }
-        .visual-2::before { content: '\f0e7'; }
-        .visual-3::before { content: '\f11b'; }
-        .visual-4::before { content: '\f3cd'; }
-        .visual-5::before { content: '\f023'; }
-
-        /* README Section */
-        .readme-section {
-            padding: 120px 5%;
-        }
-
-        .readme-container {
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
-        .readme-header {
-            text-align: center;
-            margin-bottom: 80px;
-        }
-
-        .readme-header h2 {
-            font-size: clamp(45px, 8vw, 75px);
-            background: linear-gradient(135deg, #a78bfa, #ec4899, #f59e0b, #10b981, #06b6d4);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: shimmer 5s linear infinite;
-            margin-bottom: 20px;
-            font-weight: 800;
-        }
-
-        .readme-header .tagline {
-            font-size: 22px;
-            color: #9ca3af;
-        }
-
-        .readme-content {
-            color: #9ca3af;
-            line-height: 1.9;
-        }
-
-        .readme-content h3 {
-            font-size: 36px;
-            color: #ffffff;
-            margin: 60px 0 30px;
-            font-weight: 700;
-        }
-
-        .readme-content h4 {
-            font-size: 24px;
-            margin: 40px 0 20px;
-            font-weight: 600;
-        }
-
-        /* Multicolor h4 headings */
-        .readme-content h4:nth-of-type(1) { color: #a78bfa; }
-        .readme-content h4:nth-of-type(2) { color: #ec4899; }
-        .readme-content h4:nth-of-type(3) { color: #06b6d4; }
-        .readme-content h4:nth-of-type(4) { color: #f59e0b; }
-        .readme-content h4:nth-of-type(5) { color: #10b981; }
-        .readme-content h4:nth-of-type(6) { color: #a78bfa; }
-        .readme-content h4:nth-of-type(7) { color: #ec4899; }
-        .readme-content h4:nth-of-type(8) { color: #06b6d4; }
-
-        .readme-content p {
-            font-size: 18px;
-            margin-bottom: 25px;
-        }
-
-        .readme-content ul {
-            margin: 25px 0 25px 0;
-            list-style: none;
-        }
-
-        .readme-content li {
-            margin: 15px 0;
-            font-size: 18px;
-            padding-left: 30px;
-            position: relative;
-        }
-
-        .readme-content li::before {
-            content: '→';
-            position: absolute;
-            left: 0;
-            font-weight: bold;
-        }
-
-        /* Multicolor list arrows */
-        .readme-content ul:nth-of-type(1) li::before { color: #a78bfa; }
-        .readme-content ul:nth-of-type(2) li::before { color: #ec4899; }
-        .readme-content ul:nth-of-type(3) li::before { color: #06b6d4; }
-        .readme-content ul:nth-of-type(4) li::before { color: #f59e0b; }
-        .readme-content ul:nth-of-type(5) li::before { color: #10b981; }
-        .readme-content ul:nth-of-type(6) li::before { color: #a78bfa; }
-        .readme-content ul:nth-of-type(7) li::before { color: #ec4899; }
-        .readme-content ul:nth-of-type(8) li::before { color: #06b6d4; }
-
-        .readme-content strong {
-            color: #ffffff;
-            font-weight: 600;
-        }
-
-        .readme-content code {
-            background: rgba(255, 255, 255, 0.05);
-            padding: 4px 10px;
-            border-radius: 5px;
-            color: #fbbf24;
-            font-family: 'Courier New', monospace;
-            font-size: 16px;
-        }
-
-        /* Footer */
-        footer {
-            padding: 80px 5%;
-            text-align: center;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .footer-links {
-            display: flex;
-            justify-content: center;
-            gap: 50px;
-            margin-bottom: 40px;
-            flex-wrap: wrap;
-        }
-
-        .footer-links a {
-            color: #9ca3af;
-            text-decoration: none;
-            transition: all 0.3s;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .footer-links a:nth-child(1):hover { color: #a78bfa; }
-        .footer-links a:nth-child(2):hover { color: #ec4899; }
-        .footer-links a:nth-child(3):hover { color: #f59e0b; }
-        .footer-links a:nth-child(4):hover { color: #10b981; }
-
-        .copyright {
-            color: #6b7280;
-            font-size: 15px;
-        }
-
-        /* Responsive */
-        @media (max-width: 968px) {
-            .hero-container {
-                grid-template-columns: 1fr;
-                gap: 60px;
-            }
-
-            .hero-visual {
-                order: -1;
-            }
-
-            .hero-logo {
-                max-width: 300px;
-            }
-
-            .section-content {
-                grid-template-columns: 1fr;
-                gap: 60px;
-            }
-
-            .section.reverse .section-content {
-                direction: ltr;
-            }
-
-            .section-visual {
-                height: 400px;
-            }
-
-            .hero-stats {
-                gap: 30px;
-            }
-        }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 10px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #000000;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #8b5cf6, #ec4899);
-            border-radius: 10px;
-        }
+      }
     </style>
-</head>
-<body>
-    <div class="stars" id="stars"></div>
+  </head>
+  <body>
+    <!-- Animated Background Grid -->
+    <div class="background-grid">
+      <!-- Static dotted squares -->
+      <div class="grid-squares" id="gridSquares"></div>
+      <!-- Animated lines -->
+      <div class="grid-lines" id="gridLines"></div>
+    </div>
+
+    <!-- Progress Dots Navigation -->
+    <div class="progress-dots">
+      <div class="progress-dot" data-section="0"></div>
+      <div class="progress-dot" data-section="1"></div>
+      <div class="progress-dot" data-section="2"></div>
+      <div class="progress-dot" data-section="3"></div>
+      <div class="progress-dot" data-section="4"></div>
+      <div class="progress-dot" data-section="5"></div>
+      <div class="progress-dot" data-section="6"></div>
+      <div class="progress-dot" data-section="7"></div>
+    </div>
 
     <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-container">
-            <div class="hero-content">
-                <div class="hero-badge">NOW AVAILABLE</div>
-                <h1>Remote Desktop.<br><span class="gradient-text">Reimagined.</span></h1>
-                <p class="subtitle">
-                    Ultra-low latency remote control with gaming-grade performance. 
-                    Control your PC from anywhere with sub-10ms response time.
-                </p>
-                <a href="YOUR_DOWNLOAD_URL_HERE" class="cta-button">
-                    <i class="fas fa-download"></i>
-                    Download Fluxdesk
-                </a>
-                <div class="hero-stats">
-                    <div class="stat stat-1">
-                        <span class="stat-number">{'<'}10ms</span>
-                        <span class="stat-label">Latency</span>
-                    </div>
-                    <div class="stat stat-2">
-                        <span class="stat-number">60 FPS</span>
-                        <span class="stat-label">Streaming</span>
-                    </div>
-                    <div class="stat stat-3">
-                        <span class="stat-number">100%</span>
-                        <span class="stat-label">Free</span>
-                    </div>
-                </div>
-            </div>
-            <div class="hero-visual">
-                <img src="icon.jpg" alt="Fluxdesk" class="hero-logo">
-            </div>
+    <section class="hero section" data-section="0">
+      <div class="container">
+        <div class="hero-content">
+          <img src="assets/icon.jpg" alt="Fluxdesk" class="logo-img" />
+          <h1>Fluxdesk</h1>
+          <p>
+            High-performance remote desktop with ultra-low latency control. Built for Windows with
+            WebRTC and DirectX.
+          </p>
+          <a
+            href="https://github.com/Raoufbaa/Fluxdesk-Releases/releases/latest"
+            class="download-button"
+          >
+            Download for Windows
+          </a>
         </div>
+      </div>
     </section>
 
-    <!-- Section 1 - Purple -->
-    <section class="section" id="features">
-        <div class="section-content">
-            <div class="section-text">
-                <div class="section-number">01 — ACCESS</div>
-                <h2>Desktop From Anywhere</h2>
-                <p>
-                    Access your Windows PC from any device in the world. No software installation required. 
-                    Just open your browser and connect instantly.
-                </p>
-                <ul class="feature-list">
-                    <li><i class="fas fa-globe"></i> Cross-platform web interface</li>
-                    <li><i class="fas fa-mobile-alt"></i> No client software required</li>
-                    <li><i class="fas fa-wifi"></i> Works on any modern browser</li>
-                    <li><i class="fas fa-hand-pointer"></i> Touch-optimized controls</li>
-                </ul>
-            </div>
-            <div class="section-visual visual-1"></div>
+    <!-- Main Screenshot -->
+    <section class="screenshot-section section" data-section="1">
+      <div class="container">
+        <div class="screenshot-container">
+          <!-- <img src="assets/screenshot-main.jpg" alt="Fluxdesk Interface" class="screenshot"> -->
+          <div class="screenshot-placeholder">
+            Main App Screenshot<br />
+            <small>(assets/screenshot-main.jpg)</small>
+          </div>
         </div>
+      </div>
     </section>
 
-    <!-- Section 2 - Pink -->
-    <section class="section reverse">
-        <div class="section-content">
-            <div class="section-text">
-                <div class="section-number">02 — PERFORMANCE</div>
-                <h2>Lightning Fast</h2>
-                <p>
-                    Sub-10ms latency for controls and smooth 60 FPS streaming. 
-                    Powered by WebRTC and DirectX for the ultimate performance.
-                </p>
-                <ul class="feature-list">
-                    <li><i class="fas fa-bolt"></i> WebRTC ultra-low latency</li>
-                    <li><i class="fas fa-tachometer-alt"></i> Hardware-accelerated capture</li>
-                    <li><i class="fas fa-chart-line"></i> Adaptive quality streaming</li>
-                    <li><i class="fas fa-compress"></i> Smart bandwidth optimization</li>
-                </ul>
-            </div>
-            <div class="section-visual visual-2"></div>
+    <!-- Feature 1 - Left -->
+    <section class="feature-row left section" data-section="2">
+      <div class="container">
+        <div class="feature-content">
+          <div class="feature-text">
+            <h2>Ultra-Low Latency</h2>
+            <p>
+              Experience near-instantaneous control with WebRTC-powered UDP connections delivering
+              sub-10ms response times.
+            </p>
+            <p>
+              Perfect for gaming, real-time applications, and precision work that demands immediate
+              feedback.
+            </p>
+          </div>
+          <div class="feature-visual">
+            <!-- <img src="assets/feature-1.jpg" alt="Low Latency" class="feature-image"> -->
+            <div class="feature-placeholder">Feature Image 1</div>
+          </div>
         </div>
+      </div>
     </section>
 
-    <!-- Section 3 - Cyan -->
-    <section class="section">
-        <div class="section-content">
-            <div class="section-text">
-                <div class="section-number">03 — GAMING</div>
-                <h2>Built For Gamers</h2>
-                <p>
-                    Virtual joystick controls, WASD movement, and multiple mouse modes. 
-                    Play your favorite games remotely without compromise.
-                </p>
-                <ul class="feature-list">
-                    <li><i class="fas fa-gamepad"></i> Virtual joystick controls</li>
-                    <li><i class="fas fa-mouse"></i> Direct & touchpad mouse modes</li>
-                    <li><i class="fas fa-hand-rock"></i> Multi-touch gesture support</li>
-                    <li><i class="fas fa-sliders-h"></i> Customizable button layouts</li>
-                </ul>
-            </div>
-            <div class="section-visual visual-3"></div>
+    <!-- Feature 2 - Right -->
+    <section class="feature-row right section" data-section="3">
+      <div class="container">
+        <div class="feature-content">
+          <div class="feature-text">
+            <h2>DirectX Acceleration</h2>
+            <p>
+              Hardware-accelerated screen capture using DirectX Desktop Duplication API at 60 FPS
+              for silky-smooth streaming.
+            </p>
+            <p>
+              Multi-threaded JPEG encoding ensures maximum performance while keeping CPU usage
+              minimal.
+            </p>
+          </div>
+          <div class="feature-visual">
+            <!-- <img src="assets/feature-2.jpg" alt="DirectX" class="feature-image"> -->
+            <div class="feature-placeholder">Feature Image 2</div>
+          </div>
         </div>
+      </div>
     </section>
 
-    <!-- Section 4 - Orange -->
-    <section class="section reverse">
-        <div class="section-content">
-            <div class="section-text">
-                <div class="section-number">04 — MOBILE</div>
-                <h2>Mobile Optimized</h2>
-                <p>
-                    Responsive web interface with intuitive touch gestures. 
-                    Control your PC from your smartphone with precision.
-                </p>
-                <ul class="feature-list">
-                    <li><i class="fas fa-mobile-screen"></i> Touch-optimized interface</li>
-                    <li><i class="fas fa-hand-pointer"></i> Two-finger scrolling</li>
-                    <li><i class="fas fa-clock"></i> Wake lock support</li>
-                    <li><i class="fas fa-expand"></i> Fullscreen mode</li>
-                </ul>
-            </div>
-            <div class="section-visual visual-4"></div>
+    <!-- Feature 3 - Left -->
+    <section class="feature-row left section" data-section="4">
+      <div class="container">
+        <div class="feature-content">
+          <div class="feature-text">
+            <h2>Adaptive Quality</h2>
+            <p>
+              Dynamic quality adjustment from 480p to 4K based on your network conditions for the
+              best experience.
+            </p>
+            <p>
+              Smart bandwidth management ensures smooth streaming whether you're on mobile data or
+              gigabit ethernet.
+            </p>
+          </div>
+          <div class="feature-visual">
+            <!-- <img src="assets/feature-3.jpg" alt="Adaptive Quality" class="feature-image"> -->
+            <div class="feature-placeholder">Feature Image 3</div>
+          </div>
         </div>
+      </div>
     </section>
 
-    <!-- Section 5 - Green -->
-    <section class="section">
-        <div class="section-content">
-            <div class="section-text">
-                <div class="section-number">05 — SECURITY</div>
-                <h2>Secure & Private</h2>
-                <p>
-                    Your data stays in your network. 6-digit PIN authentication 
-                    and automatic firewall configuration.
-                </p>
-                <ul class="feature-list">
-                    <li><i class="fas fa-lock"></i> PIN authentication system</li>
-                    <li><i class="fas fa-network-wired"></i> Local network only</li>
-                    <li><i class="fas fa-shield-alt"></i> Auto firewall configuration</li>
-                    <li><i class="fas fa-server"></i> No cloud dependency</li>
-                </ul>
-            </div>
-            <div class="section-visual visual-5"></div>
+    <!-- Feature 4 - Right -->
+    <section class="feature-row right section" data-section="5">
+      <div class="container">
+        <div class="feature-content">
+          <div class="feature-text">
+            <h2>Mobile Optimized</h2>
+            <p>
+              Responsive web interface with touch gestures, virtual joystick, and dual mouse modes
+              for seamless mobile control.
+            </p>
+            <p>
+              Control your PC from anywhere using just your phone or tablet browser - no app
+              installation required.
+            </p>
+          </div>
+          <div class="feature-visual">
+            <!-- <img src="assets/feature-4.jpg" alt="Mobile Interface" class="feature-image"> -->
+            <div class="feature-placeholder">Feature Image 4</div>
+          </div>
         </div>
+      </div>
     </section>
 
-    <!-- README Section -->
-    <section class="readme-section">
-        <div class="readme-container">
-            <div class="readme-header">
-                <h2>Documentation</h2>
-                <p class="tagline">Everything you need to know about Fluxdesk</p>
-            </div>
-            
-            <div class="readme-content">
-                <h3>Features</h3>
-                
-                <h4>Control Features</h4>
-                <ul>
-                    <li><strong>Dual Mouse Modes</strong>: Direct mapping or touchpad-style cursor control</li>
-                    <li><strong>Virtual Joystick</strong>: Configurable WASD movement controls with lock feature</li>
-                    <li><strong>Gesture Support</strong>: Two-finger scrolling, long-press for right-click</li>
-                    <li><strong>Keyboard Integration</strong>: Full keyboard input with combo support</li>
-                    <li><strong>Custom Buttons</strong>: Programmable action buttons for quick commands</li>
-                </ul>
-
-                <h4>Streaming Technology</h4>
-                <ul>
-                    <li><strong>DirectX Desktop Duplication</strong>: Hardware-accelerated screen capture at 60 FPS</li>
-                    <li><strong>Multi-threaded JPEG Encoding</strong>: Parallel frame processing for maximum throughput</li>
-                    <li><strong>Binary Frame Protocol</strong>: Custom dirty region tracking for efficient updates</li>
-                    <li><strong>Adaptive Quality</strong>: 5 quality presets with auto-adjustment</li>
-                    <li><strong>Offscreen Canvas Compositing</strong>: Smooth dirty region blending</li>
-                </ul>
-
-                <h4>System Management</h4>
-                <ul>
-                    <li><strong>Process Manager</strong>: View, kill, and maximize running applications</li>
-                    <li><strong>App Launcher</strong>: Quick launch for Explorer, Browser, Steam, Discord</li>
-                    <li><strong>System Commands</strong>: Lock, Sleep, Shutdown, Restart, Sign Out</li>
-                    <li><strong>Task Manager Integration</strong>: Direct access to Windows Task Manager</li>
-                </ul>
-
-                <h4>Configuration</h4>
-                <ul>
-                    <li><strong>Customizable HUD</strong>: 5 stats display levels</li>
-                    <li><strong>Button Positioning</strong>: Drag-and-drop UI customization</li>
-                    <li><strong>Joystick Sizing</strong>: Adjustable virtual joystick size</li>
-                    <li><strong>Quality Presets</strong>: Fine-tune streaming quality vs. performance</li>
-                    <li><strong>Wake Lock Support</strong>: Prevent mobile screen timeout</li>
-                </ul>
-
-                <h3>System Requirements</h3>
-                <ul>
-                    <li><strong>Operating System</strong>: Windows 10/11 (64-bit)</li>
-                    <li><strong>Runtime</strong>: .NET 9 (included in installer)</li>
-                    <li><strong>Privileges</strong>: Administrator access</li>
-                    <li><strong>Graphics</strong>: DirectX 11 compatible GPU</li>
-                    <li><strong>Network</strong>: WiFi or Ethernet connection</li>
-                </ul>
-
-                <h3>Usage</h3>
-                
-                <h4>Starting a Remote Session</h4>
-                <p>
-                    <strong>1.</strong> Launch Fluxdesk on your Windows PC<br>
-                    <strong>2.</strong> Note the connection details displayed<br>
-                    <strong>3.</strong> Open <code>http://&lt;host-ip&gt;:5000</code> in your browser<br>
-                    <strong>4.</strong> Input the 6-digit PIN<br>
-                    <strong>5.</strong> Start controlling your PC remotely
-                </p>
-
-                <h4>Control Modes</h4>
-                <ul>
-                    <li><strong>Direct Mouse Mode</strong>: Move cursor exactly where you tap/click</li>
-                    <li><strong>Touchpad Mode</strong>: Swipe to move cursor, tap to click</li>
-                    <li><strong>Virtual Joystick</strong>: On-screen WASD controls for gaming</li>
-                </ul>
-
-                <h3>Quality Settings</h3>
-                <ul>
-                    <li><strong>Very Low</strong>: 480p, ~1 Mbps (mobile data)</li>
-                    <li><strong>Low</strong>: 720p, ~2 Mbps (slow WiFi)</li>
-                    <li><strong>Medium</strong>: 1080p, ~5 Mbps (standard WiFi)</li>
-                    <li><strong>High</strong>: 1440p, ~10 Mbps (fast WiFi)</li>
-                    <li><strong>Ultra</strong>: 4K, ~20 Mbps (gigabit LAN)</li>
-                </ul>
-
-                <h3>License</h3>
-                <p>
-                    This project is licensed under the <strong>MIT License</strong>.
-                </p>
-            </div>
+    <!-- Technology -->
+    <section class="tech-section section" data-section="6">
+      <div class="container">
+        <h2 class="section-title">Modern Technology Stack</h2>
+        <div class="tech-grid">
+          <div class="tech-badge">.NET 9</div>
+          <div class="tech-badge">Avalonia UI</div>
+          <div class="tech-badge">WebRTC</div>
+          <div class="tech-badge">DirectX 11</div>
+          <div class="tech-badge">WebSocket</div>
+          <div class="tech-badge">C#</div>
+          <div class="tech-badge">JavaScript</div>
         </div>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="cta-section section" data-section="7">
+      <div class="container">
+        <div class="cta-box">
+          <h2>Ready to Get Started?</h2>
+          <p>Download Fluxdesk and start controlling your PC remotely in minutes.</p>
+          <a
+            href="https://github.com/Raoufbaa/Fluxdesk-Releases/releases/latest"
+            class="download-button"
+          >
+            Download Now
+          </a>
+        </div>
+      </div>
     </section>
 
     <!-- Footer -->
     <footer>
-        <div class="footer-links">
-            <a href="https://github.com/Raoufbaa" target="_blank">
-                <i class="fab fa-github"></i> GitHub
-            </a>
-            <a href="#">
-                <i class="fas fa-book"></i> Documentation
-            </a>
-            <a href="#">
-                <i class="fas fa-bug"></i> Report Issues
-            </a>
-            <a href="https://raoufbakhti.is-a.dev/" target="_blank">
-                <i class="fas fa-globe"></i> Website
-            </a>
-        </div>
-        <p class="copyright">
-            Made with ❤️ by Raouf Bakhti • © 2025 Fluxdesk • MIT License
+      <div class="container">
+        <p>&copy; 2025 Fluxdesk. All rights reserved.</p>
+        <p>
+          Contact: <a href="mailto:raoufbakhti32@gmail.com">raoufbakhti32@gmail.com</a> • Phone:
+          +213 79 87 09 01
         </p>
+        <p>Hassi Bahbah, Djelfa, Algeria</p>
+      </div>
     </footer>
 
+    <!-- JavaScript -->
     <script>
-        // Create stars
-        const starsContainer = document.getElementById('stars');
-        const starCount = 300;
+      // Generate static dotted squares
+      function generateSquares() {
+        const container = document.getElementById('gridSquares');
+        const squareSize = 60;
+        const cols = Math.ceil(window.innerWidth / squareSize) + 1;
+        const rows = Math.ceil(window.innerHeight / squareSize) + 1;
 
-        for (let i = 0; i < starCount; i++) {
-            const star = document.createElement('div');
-            star.className = 'star';
-            star.style.left = Math.random() * 100 + '%';
-            star.style.top = Math.random() * 100 + '%';
-            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
-            star.style.animationDelay = Math.random() * 3 + 's';
-            starsContainer.appendChild(star);
+        for (let row = 0; row < rows; row++) {
+          for (let col = 0; col < cols; col++) {
+            const square = document.createElement('div');
+            square.className = 'square';
+            square.style.left = `${col * squareSize}px`;
+            square.style.top = `${row * squareSize}px`;
+            container.appendChild(square);
+          }
+        }
+      }
+
+      // Generate grid lines and animate them like snakes
+      let lineGrid = { horizontal: [], vertical: [] };
+
+      function generateLines() {
+        const container = document.getElementById('gridLines');
+        const squareSize = 60;
+        const cols = Math.ceil(window.innerWidth / squareSize) + 1;
+        const rows = Math.ceil(window.innerHeight / squareSize) + 1;
+
+        lineGrid = { horizontal: [], vertical: [] };
+
+        // Create horizontal lines
+        for (let row = 0; row <= rows; row++) {
+          lineGrid.horizontal[row] = [];
+          for (let col = 0; col < cols; col++) {
+            const line = document.createElement('div');
+            line.className = 'grid-line horizontal';
+            line.style.left = `${col * squareSize}px`;
+            line.style.top = `${row * squareSize}px`;
+            line.dataset.row = row;
+            line.dataset.col = col;
+            container.appendChild(line);
+            lineGrid.horizontal[row][col] = line;
+          }
         }
 
-        // Create colorful floating particles
-        const particleCount = 20;
-        const colors = [
-            'rgba(167, 139, 250, 0.15)', // Purple
-            'rgba(236, 72, 153, 0.15)',  // Pink
-            'rgba(6, 182, 212, 0.15)',   // Cyan
-            'rgba(245, 158, 11, 0.15)',  // Orange
-            'rgba(16, 185, 129, 0.15)'   // Green
-        ];
-
-        for (let i = 0; i < particleCount; i++) {
-            const particle = document.createElement('div');
-            particle.className = 'particle';
-            const size = Math.random() * 50 + 30;
-            particle.style.width = size + 'px';
-            particle.style.height = size + 'px';
-            particle.style.left = Math.random() * 100 + '%';
-            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
-            particle.style.border = `1px solid ${colors[Math.floor(Math.random() * colors.length)]}`;
-            particle.style.animationDuration = (Math.random() * 25 + 20) + 's';
-            particle.style.animationDelay = Math.random() * 10 + 's';
-            particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '15px';
-            starsContainer.appendChild(particle);
+        // Create vertical lines
+        for (let col = 0; col <= cols; col++) {
+          lineGrid.vertical[col] = [];
+          for (let row = 0; row < rows; row++) {
+            const line = document.createElement('div');
+            line.className = 'grid-line vertical';
+            line.style.left = `${col * squareSize}px`;
+            line.style.top = `${row * squareSize}px`;
+            line.dataset.row = row;
+            line.dataset.col = col;
+            container.appendChild(line);
+            lineGrid.vertical[col][row] = line;
+          }
         }
 
-        // Scroll reveal
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('reveal');
-                }
-            });
-        }, {
-            threshold: 0.2,
-            rootMargin: '0px 0px -100px 0px'
-        });
+        // Start 50 snake animations
+        for (let i = 0; i < 50; i++) {
+          setTimeout(() => animateSnake(), i * 200);
+        }
+      }
 
-        document.querySelectorAll('.section-text, .section-visual').forEach(el => {
-            observer.observe(el);
-        });
+      function animateSnake() {
+        const path = [];
+        const rows = lineGrid.horizontal.length;
+        const cols = lineGrid.vertical.length;
 
-        // Smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({ behavior: 'smooth' });
-                }
-            });
+        // Random starting position
+        let isHorizontal = Math.random() > 0.5;
+        let row = Math.floor(Math.random() * rows);
+        let col = Math.floor(Math.random() * cols);
+
+        const visited = new Set();
+        const maxLength = 30 + Math.floor(Math.random() * 30);
+
+        // Build random path
+        while (path.length < maxLength) {
+          const key = `${isHorizontal ? 'h' : 'v'}-${row}-${col}`;
+
+          if (visited.has(key)) break;
+          visited.add(key);
+
+          // Add current line to path
+          if (isHorizontal && lineGrid.horizontal[row] && lineGrid.horizontal[row][col]) {
+            path.push(lineGrid.horizontal[row][col]);
+          } else if (!isHorizontal && lineGrid.vertical[col] && lineGrid.vertical[col][row]) {
+            path.push(lineGrid.vertical[col][row]);
+          } else {
+            break;
+          }
+
+          // Choose random direction
+          const directions = [];
+
+          if (isHorizontal) {
+            if (lineGrid.vertical[col + 1]) {
+              if (row > 0) directions.push({ isHorizontal: false, row: row - 1, col: col + 1 });
+              if (row < rows - 1) directions.push({ isHorizontal: false, row: row, col: col + 1 });
+            }
+            if (col < cols - 1 && lineGrid.horizontal[row]) {
+              directions.push({ isHorizontal: true, row: row, col: col + 1 });
+            }
+          } else {
+            if (lineGrid.horizontal[row + 1]) {
+              if (col > 0) directions.push({ isHorizontal: true, row: row + 1, col: col - 1 });
+              if (col < cols - 1) directions.push({ isHorizontal: true, row: row + 1, col: col });
+            }
+            if (row < rows - 1 && lineGrid.vertical[col]) {
+              directions.push({ isHorizontal: false, row: row + 1, col: col });
+            }
+          }
+
+          if (directions.length === 0) break;
+
+          const next = directions[Math.floor(Math.random() * directions.length)];
+          isHorizontal = next.isHorizontal;
+          row = next.row;
+          col = next.col;
+        }
+
+        // Animate the path
+        let currentIndex = 0;
+        const snakeLength = 15;
+
+        function moveSnake() {
+          if (currentIndex < path.length) {
+            path[currentIndex].classList.add('active');
+          }
+
+          const tailIndex = currentIndex - snakeLength;
+          if (tailIndex >= 0) {
+            path[tailIndex].classList.remove('active');
+          }
+
+          currentIndex++;
+
+          if (currentIndex < path.length + snakeLength) {
+            setTimeout(moveSnake, 40);
+          } else {
+            setTimeout(() => animateSnake(), Math.random() * 3000 + 1000);
+          }
+        }
+
+        moveSnake();
+      }
+
+      // Initialize
+      generateSquares();
+      generateLines();
+
+      // Regenerate on resize
+      let resizeTimeout;
+      window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+          document.getElementById('gridSquares').innerHTML = '';
+          document.getElementById('gridLines').innerHTML = '';
+          generateSquares();
+          generateLines();
+        }, 250);
+      });
+
+      // Intersection Observer for scroll animations
+      const observerOptions = {
+        threshold: 0.2,
+        rootMargin: '0px',
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            const sectionIndex = entry.target.getAttribute('data-section');
+            updateProgressDots(sectionIndex);
+          }
         });
+      }, observerOptions);
+
+      document.querySelectorAll('.section').forEach((section) => {
+        observer.observe(section);
+      });
+
+      function updateProgressDots(activeIndex) {
+        const dots = document.querySelectorAll('.progress-dot');
+        dots.forEach((dot, index) => {
+          if (index <= activeIndex) {
+            dot.classList.add('active');
+          } else {
+            dot.classList.remove('active');
+          }
+        });
+      }
+
+      document.querySelectorAll('.progress-dot').forEach((dot) => {
+        dot.addEventListener('click', () => {
+          const sectionIndex = dot.getAttribute('data-section');
+          const section = document.querySelector(`[data-section="${sectionIndex}"]`);
+          section.scrollIntoView({ behavior: 'smooth' });
+        });
+      });
     </script>
-</body>
+  </body>
 </html>
