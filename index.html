@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fluxdesk - Ultra-Low Latency Remote Desktop</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        /* Animated Stars */
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle linear infinite;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; }
+            50% { opacity: 1; }
+        }
+
+        /* Colorful Floating Particles */
+        .particle {
+            position: absolute;
+            animation: float linear infinite;
+            opacity: 0.6;
+        }
+
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+            10% {
+                opacity: 0.6;
+            }
+            90% {
+                opacity: 0.6;
+            }
+            100% {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 80px 5%;
+            position: relative;
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            align-items: center;
+        }
+
+        .hero-content {
+            animation: fadeInLeft 1s ease-out;
+        }
+
+        @keyframes fadeInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero-badge {
+            display: inline-block;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            border-radius: 50px;
+            margin-bottom: 30px;
+            letter-spacing: 0.5px;
+        }
+
+        .hero h1 {
+            font-size: clamp(50px, 10vw, 85px);
+            font-weight: 800;
+            margin-bottom: 30px;
+            line-height: 1.1;
+            color: #ffffff;
+        }
+
+        .hero h1 .gradient-text {
+            background: linear-gradient(135deg, #a78bfa 0%, #ec4899 25%, #f59e0b 50%, #10b981 75%, #06b6d4 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shimmer 3s linear infinite;
+        }
+
+        @keyframes shimmer {
+            to {
+                background-position: 200% center;
+            }
+        }
+
+        .hero .subtitle {
+            font-size: clamp(18px, 2.5vw, 22px);
+            color: #9ca3af;
+            margin-bottom: 50px;
+            line-height: 1.8;
+        }
+
+        .cta-button {
+            display: inline-flex;
+            align-items: center;
+            gap: 12px;
+            padding: 20px 45px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #000000;
+            background: linear-gradient(135deg, #a78bfa, #ec4899, #f59e0b);
+            background-size: 200% auto;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.3s;
+            animation: gradientShift 3s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: left; }
+            50% { background-position: right; }
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 60px rgba(167, 139, 250, 0.4);
+        }
+
+        .hero-stats {
+            display: flex;
+            gap: 50px;
+            margin-top: 60px;
+        }
+
+        .stat-number {
+            font-size: 42px;
+            font-weight: 800;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .stat-1 .stat-number {
+            background: linear-gradient(135deg, #8b5cf6, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-2 .stat-number {
+            background: linear-gradient(135deg, #ec4899, #f472b6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-3 .stat-number {
+            background: linear-gradient(135deg, #10b981, #34d399);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            font-size: 15px;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .hero-visual {
+            position: relative;
+            animation: fadeInRight 1s ease-out;
+        }
+
+        @keyframes fadeInRight {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .hero-logo {
+            width: 100%;
+            max-width: 400px;
+            height: auto;
+            border-radius: 30px;
+            animation: float-logo 4s ease-in-out infinite;
+            filter: drop-shadow(0 0 60px rgba(167, 139, 250, 0.5));
+        }
+
+        @keyframes float-logo {
+            0%, 100% { 
+                transform: translateY(0px);
+                filter: drop-shadow(0 0 60px rgba(167, 139, 250, 0.5));
+            }
+            50% { 
+                transform: translateY(-30px);
+                filter: drop-shadow(0 0 80px rgba(236, 72, 153, 0.6));
+            }
+        }
+
+        /* Content Sections */
+        .section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 120px 5%;
+            position: relative;
+        }
+
+        .section-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 100px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+            align-items: center;
+        }
+
+        .section.reverse .section-content {
+            direction: rtl;
+        }
+
+        .section.reverse .section-content > * {
+            direction: ltr;
+        }
+
+        .section-text, .section-visual {
+            opacity: 0;
+            transform: translateY(80px);
+            transition: all 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .section-text.reveal, .section-visual.reveal {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .section-number {
+            font-size: 16px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        /* Different colors for each section */
+        .section:nth-child(2) .section-number {
+            color: #a78bfa; /* Purple */
+        }
+
+        .section:nth-child(3) .section-number {
+            color: #ec4899; /* Pink */
+        }
+
+        .section:nth-child(4) .section-number {
+            color: #06b6d4; /* Cyan */
+        }
+
+        .section:nth-child(5) .section-number {
+            color: #f59e0b; /* Orange */
+        }
+
+        .section:nth-child(6) .section-number {
+            color: #10b981; /* Green */
+        }
+
+        .section-text h2 {
+            font-size: clamp(40px, 7vw, 65px);
+            margin-bottom: 30px;
+            color: #ffffff;
+            line-height: 1.2;
+            font-weight: 800;
+        }
+
+        .section-text p {
+            font-size: 20px;
+            color: #9ca3af;
+            line-height: 1.8;
+            margin-bottom: 40px;
+        }
+
+        .feature-list {
+            list-style: none;
+        }
+
+        .feature-list li {
+            padding: 18px 0;
+            font-size: 18px;
+            color: #9ca3af;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .feature-list li i {
+            font-size: 20px;
+            min-width: 25px;
+        }
+
+        /* Different icon colors for each section */
+        .section:nth-child(2) .feature-list li i {
+            color: #a78bfa;
+        }
+
+        .section:nth-child(3) .feature-list li i {
+            color: #ec4899;
+        }
+
+        .section:nth-child(4) .feature-list li i {
+            color: #06b6d4;
+        }
+
+        .section:nth-child(5) .feature-list li i {
+            color: #f59e0b;
+        }
+
+        .section:nth-child(6) .feature-list li i {
+            color: #10b981;
+        }
+
+        .section-visual {
+            position: relative;
+            height: 500px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .section-visual::before {
+            content: '';
+            position: absolute;
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            font-size: 150px;
+            color: rgba(255, 255, 255, 0.02);
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.02; }
+            50% { transform: scale(1.05); opacity: 0.04; }
+        }
+
+        .visual-1::before { content: '\f108'; }
+        .visual-2::before { content: '\f0e7'; }
+        .visual-3::before { content: '\f11b'; }
+        .visual-4::before { content: '\f3cd'; }
+        .visual-5::before { content: '\f023'; }
+
+        /* README Section */
+        .readme-section {
+            padding: 120px 5%;
+        }
+
+        .readme-container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .readme-header {
+            text-align: center;
+            margin-bottom: 80px;
+        }
+
+        .readme-header h2 {
+            font-size: clamp(45px, 8vw, 75px);
+            background: linear-gradient(135deg, #a78bfa, #ec4899, #f59e0b, #10b981, #06b6d4);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: shimmer 5s linear infinite;
+            margin-bottom: 20px;
+            font-weight: 800;
+        }
+
+        .readme-header .tagline {
+            font-size: 22px;
+            color: #9ca3af;
+        }
+
+        .readme-content {
+            color: #9ca3af;
+            line-height: 1.9;
+        }
+
+        .readme-content h3 {
+            font-size: 36px;
+            color: #ffffff;
+            margin: 60px 0 30px;
+            font-weight: 700;
+        }
+
+        .readme-content h4 {
+            font-size: 24px;
+            margin: 40px 0 20px;
+            font-weight: 600;
+        }
+
+        /* Multicolor h4 headings */
+        .readme-content h4:nth-of-type(1) { color: #a78bfa; }
+        .readme-content h4:nth-of-type(2) { color: #ec4899; }
+        .readme-content h4:nth-of-type(3) { color: #06b6d4; }
+        .readme-content h4:nth-of-type(4) { color: #f59e0b; }
+        .readme-content h4:nth-of-type(5) { color: #10b981; }
+        .readme-content h4:nth-of-type(6) { color: #a78bfa; }
+        .readme-content h4:nth-of-type(7) { color: #ec4899; }
+        .readme-content h4:nth-of-type(8) { color: #06b6d4; }
+
+        .readme-content p {
+            font-size: 18px;
+            margin-bottom: 25px;
+        }
+
+        .readme-content ul {
+            margin: 25px 0 25px 0;
+            list-style: none;
+        }
+
+        .readme-content li {
+            margin: 15px 0;
+            font-size: 18px;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .readme-content li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+        }
+
+        /* Multicolor list arrows */
+        .readme-content ul:nth-of-type(1) li::before { color: #a78bfa; }
+        .readme-content ul:nth-of-type(2) li::before { color: #ec4899; }
+        .readme-content ul:nth-of-type(3) li::before { color: #06b6d4; }
+        .readme-content ul:nth-of-type(4) li::before { color: #f59e0b; }
+        .readme-content ul:nth-of-type(5) li::before { color: #10b981; }
+        .readme-content ul:nth-of-type(6) li::before { color: #a78bfa; }
+        .readme-content ul:nth-of-type(7) li::before { color: #ec4899; }
+        .readme-content ul:nth-of-type(8) li::before { color: #06b6d4; }
+
+        .readme-content strong {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .readme-content code {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 4px 10px;
+            border-radius: 5px;
+            color: #fbbf24;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+        }
+
+        /* Footer */
+        footer {
+            padding: 80px 5%;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .footer-links a {
+            color: #9ca3af;
+            text-decoration: none;
+            transition: all 0.3s;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .footer-links a:nth-child(1):hover { color: #a78bfa; }
+        .footer-links a:nth-child(2):hover { color: #ec4899; }
+        .footer-links a:nth-child(3):hover { color: #f59e0b; }
+        .footer-links a:nth-child(4):hover { color: #10b981; }
+
+        .copyright {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                gap: 60px;
+            }
+
+            .hero-visual {
+                order: -1;
+            }
+
+            .hero-logo {
+                max-width: 300px;
+            }
+
+            .section-content {
+                grid-template-columns: 1fr;
+                gap: 60px;
+            }
+
+            .section.reverse .section-content {
+                direction: ltr;
+            }
+
+            .section-visual {
+                height: 400px;
+            }
+
+            .hero-stats {
+                gap: 30px;
+            }
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000000;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #8b5cf6, #ec4899);
+            border-radius: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="stars" id="stars"></div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="hero-badge">NOW AVAILABLE</div>
+                <h1>Remote Desktop.<br><span class="gradient-text">Reimagined.</span></h1>
+                <p class="subtitle">
+                    Ultra-low latency remote control with gaming-grade performance. 
+                    Control your PC from anywhere with sub-10ms response time.
+                </p>
+                <a href="YOUR_DOWNLOAD_URL_HERE" class="cta-button">
+                    <i class="fas fa-download"></i>
+                    Download Fluxdesk
+                </a>
+                <div class="hero-stats">
+                    <div class="stat stat-1">
+                        <span class="stat-number">{'<'}10ms</span>
+                        <span class="stat-label">Latency</span>
+                    </div>
+                    <div class="stat stat-2">
+                        <span class="stat-number">60 FPS</span>
+                        <span class="stat-label">Streaming</span>
+                    </div>
+                    <div class="stat stat-3">
+                        <span class="stat-number">100%</span>
+                        <span class="stat-label">Free</span>
+                    </div>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <img src="icon.jpg" alt="Fluxdesk" class="hero-logo">
+            </div>
+        </div>
+    </section>
+
+    <!-- Section 1 - Purple -->
+    <section class="section" id="features">
+        <div class="section-content">
+            <div class="section-text">
+                <div class="section-number">01 — ACCESS</div>
+                <h2>Desktop From Anywhere</h2>
+                <p>
+                    Access your Windows PC from any device in the world. No software installation required. 
+                    Just open your browser and connect instantly.
+                </p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-globe"></i> Cross-platform web interface</li>
+                    <li><i class="fas fa-mobile-alt"></i> No client software required</li>
+                    <li><i class="fas fa-wifi"></i> Works on any modern browser</li>
+                    <li><i class="fas fa-hand-pointer"></i> Touch-optimized controls</li>
+                </ul>
+            </div>
+            <div class="section-visual visual-1"></div>
+        </div>
+    </section>
+
+    <!-- Section 2 - Pink -->
+    <section class="section reverse">
+        <div class="section-content">
+            <div class="section-text">
+                <div class="section-number">02 — PERFORMANCE</div>
+                <h2>Lightning Fast</h2>
+                <p>
+                    Sub-10ms latency for controls and smooth 60 FPS streaming. 
+                    Powered by WebRTC and DirectX for the ultimate performance.
+                </p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-bolt"></i> WebRTC ultra-low latency</li>
+                    <li><i class="fas fa-tachometer-alt"></i> Hardware-accelerated capture</li>
+                    <li><i class="fas fa-chart-line"></i> Adaptive quality streaming</li>
+                    <li><i class="fas fa-compress"></i> Smart bandwidth optimization</li>
+                </ul>
+            </div>
+            <div class="section-visual visual-2"></div>
+        </div>
+    </section>
+
+    <!-- Section 3 - Cyan -->
+    <section class="section">
+        <div class="section-content">
+            <div class="section-text">
+                <div class="section-number">03 — GAMING</div>
+                <h2>Built For Gamers</h2>
+                <p>
+                    Virtual joystick controls, WASD movement, and multiple mouse modes. 
+                    Play your favorite games remotely without compromise.
+                </p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-gamepad"></i> Virtual joystick controls</li>
+                    <li><i class="fas fa-mouse"></i> Direct & touchpad mouse modes</li>
+                    <li><i class="fas fa-hand-rock"></i> Multi-touch gesture support</li>
+                    <li><i class="fas fa-sliders-h"></i> Customizable button layouts</li>
+                </ul>
+            </div>
+            <div class="section-visual visual-3"></div>
+        </div>
+    </section>
+
+    <!-- Section 4 - Orange -->
+    <section class="section reverse">
+        <div class="section-content">
+            <div class="section-text">
+                <div class="section-number">04 — MOBILE</div>
+                <h2>Mobile Optimized</h2>
+                <p>
+                    Responsive web interface with intuitive touch gestures. 
+                    Control your PC from your smartphone with precision.
+                </p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-mobile-screen"></i> Touch-optimized interface</li>
+                    <li><i class="fas fa-hand-pointer"></i> Two-finger scrolling</li>
+                    <li><i class="fas fa-clock"></i> Wake lock support</li>
+                    <li><i class="fas fa-expand"></i> Fullscreen mode</li>
+                </ul>
+            </div>
+            <div class="section-visual visual-4"></div>
+        </div>
+    </section>
+
+    <!-- Section 5 - Green -->
+    <section class="section">
+        <div class="section-content">
+            <div class="section-text">
+                <div class="section-number">05 — SECURITY</div>
+                <h2>Secure & Private</h2>
+                <p>
+                    Your data stays in your network. 6-digit PIN authentication 
+                    and automatic firewall configuration.
+                </p>
+                <ul class="feature-list">
+                    <li><i class="fas fa-lock"></i> PIN authentication system</li>
+                    <li><i class="fas fa-network-wired"></i> Local network only</li>
+                    <li><i class="fas fa-shield-alt"></i> Auto firewall configuration</li>
+                    <li><i class="fas fa-server"></i> No cloud dependency</li>
+                </ul>
+            </div>
+            <div class="section-visual visual-5"></div>
+        </div>
+    </section>
+
+    <!-- README Section -->
+    <section class="readme-section">
+        <div class="readme-container">
+            <div class="readme-header">
+                <h2>Documentation</h2>
+                <p class="tagline">Everything you need to know about Fluxdesk</p>
+            </div>
+            
+            <div class="readme-content">
+                <h3>Features</h3>
+                
+                <h4>Control Features</h4>
+                <ul>
+                    <li><strong>Dual Mouse Modes</strong>: Direct mapping or touchpad-style cursor control</li>
+                    <li><strong>Virtual Joystick</strong>: Configurable WASD movement controls with lock feature</li>
+                    <li><strong>Gesture Support</strong>: Two-finger scrolling, long-press for right-click</li>
+                    <li><strong>Keyboard Integration</strong>: Full keyboard input with combo support</li>
+                    <li><strong>Custom Buttons</strong>: Programmable action buttons for quick commands</li>
+                </ul>
+
+                <h4>Streaming Technology</h4>
+                <ul>
+                    <li><strong>DirectX Desktop Duplication</strong>: Hardware-accelerated screen capture at 60 FPS</li>
+                    <li><strong>Multi-threaded JPEG Encoding</strong>: Parallel frame processing for maximum throughput</li>
+                    <li><strong>Binary Frame Protocol</strong>: Custom dirty region tracking for efficient updates</li>
+                    <li><strong>Adaptive Quality</strong>: 5 quality presets with auto-adjustment</li>
+                    <li><strong>Offscreen Canvas Compositing</strong>: Smooth dirty region blending</li>
+                </ul>
+
+                <h4>System Management</h4>
+                <ul>
+                    <li><strong>Process Manager</strong>: View, kill, and maximize running applications</li>
+                    <li><strong>App Launcher</strong>: Quick launch for Explorer, Browser, Steam, Discord</li>
+                    <li><strong>System Commands</strong>: Lock, Sleep, Shutdown, Restart, Sign Out</li>
+                    <li><strong>Task Manager Integration</strong>: Direct access to Windows Task Manager</li>
+                </ul>
+
+                <h4>Configuration</h4>
+                <ul>
+                    <li><strong>Customizable HUD</strong>: 5 stats display levels</li>
+                    <li><strong>Button Positioning</strong>: Drag-and-drop UI customization</li>
+                    <li><strong>Joystick Sizing</strong>: Adjustable virtual joystick size</li>
+                    <li><strong>Quality Presets</strong>: Fine-tune streaming quality vs. performance</li>
+                    <li><strong>Wake Lock Support</strong>: Prevent mobile screen timeout</li>
+                </ul>
+
+                <h3>System Requirements</h3>
+                <ul>
+                    <li><strong>Operating System</strong>: Windows 10/11 (64-bit)</li>
+                    <li><strong>Runtime</strong>: .NET 9 (included in installer)</li>
+                    <li><strong>Privileges</strong>: Administrator access</li>
+                    <li><strong>Graphics</strong>: DirectX 11 compatible GPU</li>
+                    <li><strong>Network</strong>: WiFi or Ethernet connection</li>
+                </ul>
+
+                <h3>Usage</h3>
+                
+                <h4>Starting a Remote Session</h4>
+                <p>
+                    <strong>1.</strong> Launch Fluxdesk on your Windows PC<br>
+                    <strong>2.</strong> Note the connection details displayed<br>
+                    <strong>3.</strong> Open <code>http://&lt;host-ip&gt;:5000</code> in your browser<br>
+                    <strong>4.</strong> Input the 6-digit PIN<br>
+                    <strong>5.</strong> Start controlling your PC remotely
+                </p>
+
+                <h4>Control Modes</h4>
+                <ul>
+                    <li><strong>Direct Mouse Mode</strong>: Move cursor exactly where you tap/click</li>
+                    <li><strong>Touchpad Mode</strong>: Swipe to move cursor, tap to click</li>
+                    <li><strong>Virtual Joystick</strong>: On-screen WASD controls for gaming</li>
+                </ul>
+
+                <h3>Quality Settings</h3>
+                <ul>
+                    <li><strong>Very Low</strong>: 480p, ~1 Mbps (mobile data)</li>
+                    <li><strong>Low</strong>: 720p, ~2 Mbps (slow WiFi)</li>
+                    <li><strong>Medium</strong>: 1080p, ~5 Mbps (standard WiFi)</li>
+                    <li><strong>High</strong>: 1440p, ~10 Mbps (fast WiFi)</li>
+                    <li><strong>Ultra</strong>: 4K, ~20 Mbps (gigabit LAN)</li>
+                </ul>
+
+                <h3>License</h3>
+                <p>
+                    This project is licensed under the <strong>MIT License</strong>.
+                </p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-links">
+            <a href="https://github.com/Raoufbaa" target="_blank">
+                <i class="fab fa-github"></i> GitHub
+            </a>
+            <a href="#">
+                <i class="fas fa-book"></i> Documentation
+            </a>
+            <a href="#">
+                <i class="fas fa-bug"></i> Report Issues
+            </a>
+            <a href="https://raoufbakhti.is-a.dev/" target="_blank">
+                <i class="fas fa-globe"></i> Website
+            </a>
+        </div>
+        <p class="copyright">
+            Made with ❤️ by Raouf Bakhti • © 2025 Fluxdesk • MIT License
+        </p>
+    </footer>
+
+    <script>
+        // Create stars
+        const starsContainer = document.getElementById('stars');
+        const starCount = 300;
+
+        for (let i = 0; i < starCount; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.animationDuration = (Math.random() * 3 + 2) + 's';
+            star.style.animationDelay = Math.random() * 3 + 's';
+            starsContainer.appendChild(star);
+        }
+
+        // Create colorful floating particles
+        const particleCount = 20;
+        const colors = [
+            'rgba(167, 139, 250, 0.15)', // Purple
+            'rgba(236, 72, 153, 0.15)',  // Pink
+            'rgba(6, 182, 212, 0.15)',   // Cyan
+            'rgba(245, 158, 11, 0.15)',  // Orange
+            'rgba(16, 185, 129, 0.15)'   // Green
+        ];
+
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            const size = Math.random() * 50 + 30;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.border = `1px solid ${colors[Math.floor(Math.random() * colors.length)]}`;
+            particle.style.animationDuration = (Math.random() * 25 + 20) + 's';
+            particle.style.animationDelay = Math.random() * 10 + 's';
+            particle.style.borderRadius = Math.random() > 0.5 ? '50%' : '15px';
+            starsContainer.appendChild(particle);
+        }
+
+        // Scroll reveal
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('reveal');
+                }
+            });
+        }, {
+            threshold: 0.2,
+            rootMargin: '0px 0px -100px 0px'
+        });
+
+        document.querySelectorAll('.section-text, .section-visual').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Smooth scroll
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
