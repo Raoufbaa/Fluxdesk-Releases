@@ -1019,14 +1019,40 @@
 
     <script>
       // Load download count from generated JSON file
+      // Replace the loadDownloadCount function with this improved version:
       async function loadDownloadCount() {
         try {
-          const response = await fetch('downloads.json?' + Date.now()); // Cache bust
+          const response = await fetch('downloads.json?' + Date.now());
+
+          // Check if the file exists
+          if (!response.ok) {
+            throw new Error('File not found');
+          }
+
           const data = await response.json();
           document.getElementById('downloadCount').textContent = data.count.toLocaleString();
         } catch (error) {
-          console.error('Error loading download count:', error);
-          document.getElementById('downloadCount').textContent = '0';
+          console.log('Download counter not ready yet. Fetching from GitHub API...');
+
+          // Fallback: Fetch directly from GitHub API
+          try {
+            const apiResponse = await fetch(
+              'https://api.github.com/repos/Raoufbaa/Fluxdesk-Releases/releases'
+            );
+            const releases = await apiResponse.json();
+
+            let totalDownloads = 0;
+            releases.forEach((release) => {
+              release.assets.forEach((asset) => {
+                totalDownloads += asset.download_count;
+              });
+            });
+
+            document.getElementById('downloadCount').textContent = totalDownloads.toLocaleString();
+          } catch (apiError) {
+            console.error('Error fetching from API:', apiError);
+            document.getElementById('downloadCount').textContent = '0';
+          }
         }
       }
 
