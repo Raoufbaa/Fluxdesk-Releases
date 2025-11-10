@@ -29,6 +29,8 @@
       <div class="progress-dot" data-section="5"></div>
       <div class="progress-dot" data-section="6"></div>
       <div class="progress-dot" data-section="7"></div>
+      <div class="progress-dot" data-section="8"></div>
+      <div class="progress-dot" data-section="9"></div>
     </div>
 
     <section class="hero section" data-section="0">
@@ -108,88 +110,383 @@
           </div>
           <div class="hero-image-container">
             <div class="hero-main-image">
-              <img class="heroimg" src="./assets/hero-main.png" alt="" />
+              <img class="heroimg" src="./assets/hero-main.png" alt="Fluxdesk Interface" />
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="feature-row left section" data-section="2">
+    <section class="feature-row left section" data-section="1">
+      <div style="padding: 20px" class="container">
+        <div class="feature-content-info">
+          <h2>System Requirements</h2>
+          <div class="info-grid">
+            <div class="info-card">
+              <h3>🖥️ Server (Host PC)</h3>
+              <ul>
+                <li>Windows 10/11 (64-bit)</li>
+                <li>.NET 9 Runtime</li>
+                <li>DirectX 11 compatible GPU</li>
+                <li>4GB RAM minimum</li>
+                <li>Network connection</li>
+              </ul>
+            </div>
+            <div class="info-card">
+              <h3>📱 Client (Mobile/Web)</h3>
+              <ul>
+                <li>Modern web browser (Chrome, Edge, Firefox)</li>
+                <li>WebRTC support required</li>
+                <li>2GB RAM recommended</li>
+                <li>Stable network connection</li>
+                <li>Touchscreen for mobile controls</li>
+              </ul>
+            </div>
+            <div class="info-card">
+              <h3>✨ Supported Features</h3>
+              <ul>
+                <li>Full keyboard & mouse support</li>
+                <li>Touch gesture controls</li>
+                <li>Audio streaming (coming soon)</li>
+                <li>Multi-monitor switching (coming soon)</li>
+                <li>Clipboard sync (coming soon)</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="feature-row right section" data-section="2">
       <div class="container">
         <div class="feature-content">
           <div class="feature-text">
             <h2>WebRTC Ultra-Low Latency</h2>
             <p>
               Experience UDP-based input controls with less than 10ms response time, delivering
-              near-instantaneous control for gaming and real-time applications.
+              near-instantaneous control for gaming and real-time applications. WebRTC DataChannels
+              bypass traditional HTTP overhead for direct peer-to-peer communication.
             </p>
             <p>
-              WebRTC DataChannels provide direct peer-to-peer communication, ensuring your inputs
-              are transmitted with minimal delay for the most responsive remote desktop experience
-              possible.
+              Advanced buffering strategies and adaptive bitrate streaming ensure smooth performance
+              even on variable network conditions. Real-time statistics monitoring provides insights
+              into connection quality, packet loss, and latency metrics.
             </p>
           </div>
           <div class="feature-visual">
-            <div class="feature-placeholder">
-              Feature 1<br />(Portrait 9:16)<br />
-              <small>assets/feature-1.jpg</small>
+            <div class="feature-icon-container">
+              <svg class="feature-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="80"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  opacity="0.2"
+                />
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="60"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  opacity="0.3"
+                />
+                <circle
+                  cx="100"
+                  cy="100"
+                  r="40"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  opacity="0.5"
+                />
+                <circle cx="100" cy="100" r="15" fill="currentColor" />
+                <path
+                  d="M100 20 L100 40 M180 100 L160 100 M100 180 L100 160 M20 100 L40 100"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M145 55 L130 70 M145 145 L130 130 M55 145 L70 130 M55 55 L70 70"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+              </svg>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="feature-row right section" data-section="3">
+    <section class="feature-row left section" data-section="3">
       <div class="container">
         <div class="feature-content">
           <div class="feature-text">
             <h2>DirectX Screen Capture</h2>
             <p>
               Hardware-accelerated screen capture at 60 FPS using DirectX Desktop Duplication API
-              with zero-copy GPU memory access for silky-smooth streaming.
+              with zero-copy GPU memory access for silky-smooth streaming. Leverages SharpDX for
+              direct GPU buffer manipulation without CPU overhead.
             </p>
             <p>
               Multi-threaded JPEG encoding with 4+ parallel encoder threads and bitmap pooling
-              ensures maximum throughput while keeping CPU usage minimal and reducing memory
-              pressure.
+              ensures maximum throughput while keeping CPU usage minimal. Advanced memory management
+              reduces pressure and prevents frame drops during high-activity scenarios.
             </p>
           </div>
           <div class="feature-visual">
-            <div class="feature-placeholder">
-              Feature 2<br />(Portrait 9:16)<br />
-              <small>assets/feature-2.jpg</small>
+            <div class="feature-icon-container">
+              <svg class="feature-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <rect
+                  x="30"
+                  y="40"
+                  width="140"
+                  height="90"
+                  rx="8"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                />
+                <rect x="40" y="50" width="120" height="70" fill="currentColor" opacity="0.1" />
+                <line x1="70" y1="130" x2="100" y2="150" stroke="currentColor" stroke-width="3" />
+                <line x1="130" y1="130" x2="100" y2="150" stroke="currentColor" stroke-width="3" />
+                <line
+                  x1="60"
+                  y1="160"
+                  x2="140"
+                  y2="160"
+                  stroke="currentColor"
+                  stroke-width="3"
+                  stroke-linecap="round"
+                />
+                <path
+                  d="M50 70 L60 80 L80 60"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+                <text x="90" y="85" font-family="monospace" font-size="12" fill="currentColor">
+                  60 FPS
+                </text>
+                <circle cx="150" cy="60" r="3" fill="currentColor" />
+                <circle cx="150" cy="70" r="3" fill="currentColor" />
+                <circle cx="150" cy="80" r="3" fill="currentColor" />
+              </svg>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="feature-row left section" data-section="4">
+    <section class="feature-row right section" data-section="4">
       <div class="container">
         <div class="feature-content">
           <div class="feature-text">
             <h2>Dirty Region Optimization</h2>
             <p>
               Binary frame protocol with custom 64x64 tile-based dirty region tracking reduces
-              bandwidth by 70-95% in static scenes through selective tile encoding.
+              bandwidth by 70-95% in static scenes through selective tile encoding. Only changed
+              screen regions are transmitted, dramatically reducing network requirements.
             </p>
             <p>
-              Automatic keyframe insertion and frame skip detection ensure efficient streaming while
-              maintaining visual quality, with bandwidth optimization for any network condition.
+              Automatic keyframe insertion ensures visual consistency while frame skip detection
+              maintains efficient streaming. Quality presets allow users to balance visual fidelity
+              with bandwidth constraints for optimal performance across network conditions.
             </p>
           </div>
           <div class="feature-visual">
-            <div class="feature-placeholder">
-              Feature 3<br />(Portrait 9:16)<br />
-              <small>assets/feature-3.jpg</small>
+            <div class="feature-icon-container">
+              <svg class="feature-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <g id="grid">
+                  <rect
+                    x="40"
+                    y="40"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.1"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="70"
+                    y="40"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.6"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="100"
+                    y="40"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.1"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="130"
+                    y="40"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.1"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+
+                  <rect
+                    x="40"
+                    y="70"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.1"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="70"
+                    y="70"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.8"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
+                  <rect
+                    x="100"
+                    y="70"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.8"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  />
+                  <rect
+                    x="130"
+                    y="70"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.1"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+
+                  <rect
+                    x="40"
+                    y="100"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.1"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="70"
+                    y="100"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.1"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="100"
+                    y="100"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.6"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="130"
+                    y="100"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.1"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+
+                  <rect
+                    x="40"
+                    y="130"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.1"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="70"
+                    y="130"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.1"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="100"
+                    y="130"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.1"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                  <rect
+                    x="130"
+                    y="130"
+                    width="30"
+                    height="30"
+                    fill="currentColor"
+                    opacity="0.1"
+                    stroke="currentColor"
+                    stroke-width="1.5"
+                  />
+                </g>
+                <text
+                  x="100"
+                  y="25"
+                  font-family="monospace"
+                  font-size="11"
+                  fill="currentColor"
+                  text-anchor="middle"
+                >
+                  64×64 Tiles
+                </text>
+              </svg>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="feature-row right section" data-section="5">
+    <section class="feature-row left section" data-section="5">
       <div class="container">
         <div class="feature-content">
           <div class="feature-text">
@@ -197,25 +494,107 @@
             <p>
               Dual mouse modes with touchpad and direct positioning, virtual joystick with
               configurable WASD controls, and customizable action buttons designed specifically for
-              gaming.
+              gaming. Haptic feedback support provides tactile response for mobile users.
             </p>
             <p>
               Full touch gesture support including two-finger scrolling, long-press for right-click,
-              and drag-and-drop button positioning with resizable control elements and layout
-              saving.
+              pinch-to-zoom, and drag-and-drop button positioning. Resizable control elements and
+              layout saving allow personalized control schemes for different games and applications.
             </p>
           </div>
           <div class="feature-visual">
-            <div class="feature-placeholder">
-              Feature 4<br />(Portrait 9:16)<br />
-              <small>assets/feature-4.jpg</small>
+            <div class="feature-icon-container">
+              <svg class="feature-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M40 80 Q40 60 60 60 L90 60 L90 40 Q90 30 100 30 Q110 30 110 40 L110 60 L140 60 Q160 60 160 80 L160 120 Q160 140 140 140 L130 140 L130 150 Q130 160 120 160 Q110 160 110 150 L110 140 L90 140 L90 150 Q90 160 80 160 Q70 160 70 150 L70 140 L60 140 Q40 140 40 120 Z"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="3"
+                />
+                <circle
+                  cx="70"
+                  cy="90"
+                  r="15"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.5"
+                />
+                <line x1="70" y1="80" x2="70" y2="88" stroke="currentColor" stroke-width="2.5" />
+                <line x1="78" y1="90" x2="70" y2="90" stroke="currentColor" stroke-width="2.5" />
+                <line x1="70" y1="100" x2="70" y2="92" stroke="currentColor" stroke-width="2.5" />
+                <line x1="62" y1="90" x2="70" y2="90" stroke="currentColor" stroke-width="2.5" />
+
+                <circle cx="135" cy="80" r="8" fill="currentColor" opacity="0.3" />
+                <circle cx="150" cy="95" r="8" fill="currentColor" opacity="0.3" />
+                <circle cx="120" cy="95" r="8" fill="currentColor" opacity="0.3" />
+                <circle cx="135" cy="110" r="8" fill="currentColor" opacity="0.3" />
+              </svg>
             </div>
           </div>
         </div>
       </div>
     </section>
 
-    <section class="tech-section section" data-section="6">
+    <section class="feature-row right section" data-section="6">
+      <div class="container">
+        <div class="feature-content-info">
+          <h2>Key Features</h2>
+          <div class="features-list">
+            <div class="feature-item">
+              <span class="feature-emoji">⚡</span>
+              <div>
+                <h3>Real-Time Performance</h3>
+                <p>
+                  Sub-10ms input latency with WebRTC DataChannels and optimized frame delivery
+                  pipeline
+                </p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-emoji">🔒</span>
+              <div>
+                <h3>Secure Connection</h3>
+                <p>End-to-end encryption with WebRTC DTLS-SRTP and secure WebSocket connections</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-emoji">📊</span>
+              <div>
+                <h3>Performance Monitoring</h3>
+                <p>Real-time FPS counter, bandwidth usage, latency metrics, and frame statistics</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-emoji">🎮</span>
+              <div>
+                <h3>Gaming Ready</h3>
+                <p>Optimized for low-latency gaming with customizable controls and input mapping</p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-emoji">📱</span>
+              <div>
+                <h3>Cross-Platform</h3>
+                <p>
+                  Access from any device with a modern web browser - no client installation required
+                </p>
+              </div>
+            </div>
+            <div class="feature-item">
+              <span class="feature-emoji">⚙️</span>
+              <div>
+                <h3>Highly Configurable</h3>
+                <p>
+                  Quality presets, resolution scaling, frame rate limits, and bandwidth controls
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="tech-section section" data-section="7">
       <div class="container">
         <h2 class="section-title">Modern Technology Stack</h2>
         <div class="tech-grid">
@@ -227,32 +606,42 @@
           <div class="tech-badge">WebSocket</div>
           <div class="tech-badge">C#</div>
           <div class="tech-badge">JavaScript</div>
+          <div class="tech-badge">JPEG Encoding</div>
+          <div class="tech-badge">Binary Protocol</div>
         </div>
       </div>
     </section>
 
-    <section class="cta-section section" data-section="7">
+    <section class="feature-row left section" data-section="8">
       <div class="container">
-        <div class="cta-box">
-          <h2>Ready to Get Started?</h2>
-          <p>
-            Download Fluxdesk and start controlling your Windows PC remotely with ultra-low latency
-            in minutes.
-          </p>
-          <a href="https://github.com/Raoufbaa/Fluxdesk-Releases/releases/latest" class="fancy">
-            <span class="topKey"></span>
-            <span class="text">Download Now</span>
-            <span class="download-counter">
-              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path
-                  d="M12 16L7 11h3V3h4v8h3l-5 5zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm14 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                />
-              </svg>
-              <span id="downloadCount2">...</span>
-            </span>
-            <span class="bottomKey1"></span>
-            <span class="bottomKey2"></span>
-          </a>
+        <div class="feature-content-info">
+          <h2>Getting Started</h2>
+          <div class="getting-started">
+            <div class="step-card">
+              <div class="step-number">1</div>
+              <h3>Download & Install</h3>
+              <p>
+                Download the latest release from GitHub and install on your Windows PC. The
+                installer will set up all required dependencies including .NET 9 Runtime.
+              </p>
+            </div>
+            <div class="step-card">
+              <div class="step-number">2</div>
+              <h3>Configure Network</h3>
+              <p>
+                Configure your router's port forwarding for external access or use on local network.
+                The application will guide you through the setup process.
+              </p>
+            </div>
+            <div class="step-card">
+              <div class="step-number">3</div>
+              <h3>Connect & Control</h3>
+              <p>
+                Open the web interface on any device, enter your connection details, and start
+                controlling your PC remotely with ultra-low latency.
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
