@@ -435,6 +435,7 @@ body {
   padding: 15px;
   backdrop-filter: blur(30px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  perspective: 1000px;
 }
 
 .hero-main-image {
@@ -453,6 +454,7 @@ body {
   text-align: center;
   padding: 5px;
 }
+
 .heroimg {
   width: 100%;
   height: 100%;
@@ -460,7 +462,10 @@ body {
   border-radius: 16px;
   border-top-left-radius: 0;
   border-bottom-right-radius: 0;
+  transition: transform 0.1s ease-out;
+  transform-style: preserve-3d;
 }
+
 .feature-row {
   min-height: 100vh;
   display: flex;
