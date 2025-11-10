@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Fluxdesk - High-Performance Remote Desktop Solution</title>
     <link rel="icon" type="image/jpeg" href="assets/icon.jpg" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
     <style>
       * {
         margin: 0;
@@ -12,15 +16,27 @@
         box-sizing: border-box;
       }
 
+      :root {
+        --bg: #0c0d0e;
+        --ts: #0c0d0ea8;
+        --card: #0b0e106b;
+        --border: #2e3239;
+        --main: #5f5f5f;
+        --mainLight: #51555d;
+        --text: #ffffff;
+        --textSec: #b8b9bc;
+        --error: #fb5b53;
+      }
+
       body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Inter', sans-serif;
-        background: linear-gradient(180deg, #050e13, #0b0e10);
-        color: #ffffff;
+        font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        background: var(--bg);
+        color: var(--text);
         overflow-x: hidden;
         line-height: 1.6;
       }
 
-      /* Animated Background Grid */
+      /* Animated Background with Gradient Orbs - REDUCED OPACITY */
       .background-grid {
         position: fixed;
         top: 0;
@@ -30,25 +46,70 @@
         z-index: 0;
         pointer-events: none;
         overflow: hidden;
-        opacity: 0.3;
       }
 
-      /* Static dotted squares background */
+      .gradient-orb {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(120px);
+        opacity: 0.06;
+        animation: float 20s ease-in-out infinite;
+      }
+
+      .orb-1 {
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, #3b82f6, transparent);
+        top: -200px;
+        left: -100px;
+      }
+
+      .orb-2 {
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, #8b5cf6, transparent);
+        top: 50%;
+        right: -150px;
+        animation-delay: -5s;
+      }
+
+      .orb-3 {
+        width: 700px;
+        height: 700px;
+        background: radial-gradient(circle, #06b6d4, transparent);
+        bottom: -250px;
+        left: 30%;
+        animation-delay: -10s;
+      }
+
+      @keyframes float {
+        0%,
+        100% {
+          transform: translate(0, 0) scale(1);
+        }
+        33% {
+          transform: translate(30px, -30px) scale(1.1);
+        }
+        66% {
+          transform: translate(-20px, 20px) scale(0.9);
+        }
+      }
+
       .grid-squares {
         position: absolute;
         width: 100%;
         height: 100%;
+        opacity: 0.08;
       }
 
       .square {
         position: absolute;
-        width: 60px;
-        height: 60px;
-        border: 1px dotted rgba(255, 255, 255, 0.1);
+        width: 80px;
+        height: 80px;
+        border: 1px solid rgba(255, 255, 255, 0.05);
         background: transparent;
       }
 
-      /* Animated lines */
       .grid-lines {
         position: absolute;
         width: 100%;
@@ -57,24 +118,23 @@
 
       .grid-line {
         position: absolute;
-        background: rgba(255, 255, 255, 0.12);
+        background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), transparent);
         opacity: 0;
         transition: opacity 0.3s ease;
       }
 
       .grid-line.horizontal {
-        height: 1px;
-        width: 60px;
+        height: 2px;
+        width: 80px;
       }
 
       .grid-line.vertical {
-        width: 1px;
-        height: 60px;
+        width: 2px;
+        height: 80px;
       }
 
       .grid-line.active {
         opacity: 1;
-        background: rgba(255, 255, 255, 0.25);
       }
 
       .container {
@@ -85,23 +145,22 @@
         padding: 0 40px;
       }
 
-      /* Progress Dots */
       .progress-dots {
         position: fixed;
-        right: 40px;
+        right: 15px;
         top: 50%;
         transform: translateY(-50%);
         z-index: 1000;
         display: flex;
         flex-direction: column;
-        gap: 20px;
+        gap: 16px;
       }
 
       .progress-dot {
-        width: 12px;
-        height: 12px;
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        border-radius: 3px;
+        width: 10px;
+        height: 10px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 1px solid var(--border);
         position: relative;
         transition: all 0.4s ease;
         cursor: pointer;
@@ -112,32 +171,30 @@
         position: absolute;
         top: 0;
         left: 0;
-        width: 100%;
-        height: 0%;
-        background: #ffffff;
-        transition: height 0.4s ease;
-      }
-
-      .progress-dot.active {
-        border-color: #ffffff;
+        width: 0%;
+        height: 100%;
+        background: var(--main);
+        transition: width 0.4s ease;
       }
 
       .progress-dot.active::before {
-        height: 100%;
+        width: 100%;
       }
 
-      /* Hero Section */
+      .progress-dot:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+
       .hero {
-        min-height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        text-align: center;
-        padding: 60px 0;
+        padding: 100px 0 80px;
         position: relative;
       }
 
-      .hero-content {
+      .hero-layout {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 80px;
         opacity: 0;
         transform: translateY(30px);
         animation: fadeInUp 1s ease forwards;
@@ -150,91 +207,264 @@
         }
       }
 
-      .logo-img {
-        width: 100px;
-        height: 100px;
-        border-radius: 20px;
-        margin-bottom: 30px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+      .hero-content {
+        flex: 1;
+        width: 100%;
+        max-width: 700px;
       }
 
       .hero h1 {
         font-size: 4.5rem;
         font-weight: 700;
-        margin-bottom: 20px;
         letter-spacing: -0.03em;
+        color: var(--text);
+        margin-bottom: 8px;
+        line-height: 1.1;
       }
 
       .hero p {
-        font-size: 1.5rem;
-        color: rgba(255, 255, 255, 0.6);
-        margin-bottom: 50px;
-        max-width: 700px;
-        margin-left: auto;
-        margin-right: auto;
+        font-size: 1.3rem;
+        color: var(--textSec);
+        margin-bottom: 40px;
+        line-height: 1.7;
+        text-align: justify;
       }
 
-      .download-button {
-        display: inline-block;
-        padding: 20px 60px;
-        background: #ffffff;
-        color: #0b0e10;
-        font-size: 1.2rem;
-        font-weight: 600;
-        border-radius: 12px;
-        text-decoration: none;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 40px rgba(255, 255, 255, 0.15);
-      }
-
-      .download-button:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 15px 50px rgba(255, 255, 255, 0.25);
-      }
-
-      /* Screenshot Section */
-      .screenshot-section {
-        padding: 100px 0;
-        opacity: 0;
-        transform: translateY(50px);
-        transition: all 0.8s ease;
-        position: relative;
-      }
-
-      .screenshot-section.visible {
-        opacity: 1;
-        transform: translateY(0);
-      }
-
-      .screenshot-container {
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.05);
-        border-radius: 24px;
-        padding: 50px;
-        backdrop-filter: blur(40px);
-        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-      }
-
-      .screenshot-placeholder {
+      .hero-actions {
+        display: flex;
+        flex-direction: column;
         width: 100%;
-        height: 600px;
-        background: rgba(255, 255, 255, 0.03);
+        gap: 24px;
+        align-items: flex-start;
+      }
+
+      .button-row {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        width: 100%;
+      }
+
+      .fancy {
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        background: #00272c;
+        border: 3px solid #003b45;
+        height: 60px;
+        width: 100%;
+        border-radius: 3px;
+        border-bottom-right-radius: 10px;
+        box-sizing: border-box;
+        color: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        margin: 0;
+        outline: none;
+        overflow: visible;
+        padding: 15px;
+        width: 60%;
+        position: relative;
+        text-align: center;
+        text-decoration: none;
+        text-transform: none;
+        transition: all 0.3s ease-in-out;
+        user-select: none;
+        font-size: 13px;
+        flex: 1;
+      }
+
+      .fancy::before {
+        content: ' ';
+        width: 1.5625rem;
+        height: 2px;
+        background: white;
+        top: 30%;
+        left: 1.5em;
+        position: absolute;
+        transform: translateY(-50%);
+        transform-origin: center;
+        transition: background 0.3s linear, width 0.3s linear;
+      }
+
+      .fancy .text {
+        font-size: 1.125em;
+        font-family: 'ubuntu', sans-serif;
+        font-weight: 700;
+        line-height: 1.33333em;
+        padding-left: 2.5em;
+        display: block;
+        text-align: left;
+        transition: all 0.3s ease-in-out;
+        text-transform: capitalize;
+        text-decoration: none;
+        color: white;
+      }
+
+      .fancy .topKey {
+        height: 3px;
+        width: 1.5625rem;
+        top: -3px;
+        left: 0.625rem;
+        position: absolute;
+        background: #00ffea;
+        transition: width 0.5s ease-out, left 0.3s ease-out;
+      }
+
+      .fancy .bottomKey1 {
+        height: 3px;
+        width: 1.5625rem;
+        right: 1.875rem;
+        bottom: -3px;
+        position: absolute;
+        background: #0077ff;
+        transition: width 0.5s ease-out, right 0.3s ease-out;
+      }
+
+      .fancy .bottomKey2 {
+        height: 3px;
+        width: 0.625rem;
+        right: 0.625rem;
+        bottom: -3px;
+        position: absolute;
+        background: #cfcfcf;
+        transition: width 0.5s ease-out, right 0.3s ease-out;
+      }
+
+      .fancy:hover {
+        border: 3px solid var(--border);
+        border-top-right-radius: 15px;
+        border-bottom-left-radius: 15px;
+        background: var(--card);
+      }
+
+      .fancy:hover::before {
+        width: 0.9375rem;
+        background: white;
+      }
+
+      .fancy:hover .text {
+        color: white;
+        padding-left: 1.5em;
+      }
+
+      .fancy:hover .topKey {
+        left: -2px;
+        width: 0px;
+      }
+
+      .fancy:hover .bottomKey1,
+      .fancy:hover .bottomKey2 {
+        right: 0;
+        width: 0;
+      }
+
+      .fancy.secondary {
+        background: transparent;
+        border: 3px solid var(--border);
+      }
+
+      .fancy.secondary:hover {
+        background: var(--ts);
+      }
+
+      .download-stats {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 18px;
+        background: rgba(0, 255, 234, 0.08);
+        border: 1px solid rgba(0, 255, 234, 0.2);
+        border-radius: 8px;
+        font-size: 0.9rem;
+        color: #00ffea;
+        font-weight: 600;
+        margin-bottom: 10px;
+      }
+
+      .download-stats svg {
+        width: 18px;
+        height: 18px;
+        fill: #00ffea;
+      }
+
+      .contact-box {
+        background: var(--card);
+        border: 2px solid var(--border);
+        border-radius: 12px;
+        border-top-left-radius: 0;
+        border-bottom-right-radius: 0;
+        padding: 24px 28px;
+        backdrop-filter: blur(20px);
+        width: 100%;
+        transition: all 0.3s ease;
+      }
+
+      .contact-box:hover {
+        border-color: var(--mainLight);
+      }
+
+      .contact-box h3 {
+        font-size: 1.05rem;
+        font-weight: 700;
+        margin-bottom: 14px;
+        color: var(--text);
+      }
+
+      .contact-box p {
+        font-size: 0.95rem;
+        color: var(--textSec);
+        margin-bottom: 8px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .contact-box a {
+        color: var(--mainLight);
+        text-decoration: none;
+        transition: color 0.3s ease;
+      }
+
+      .contact-box a:hover {
+        color: #00ffea;
+      }
+
+      .contact-icon {
+        width: 16px;
+        height: 16px;
+        fill: var(--mainLight);
+      }
+
+      .hero-image-container {
+        flex: 0 0 420px;
+        background: var(--card);
+        border: 2px solid var(--border);
+        border-radius: 20px;
+        border-top-left-radius: 0;
+        border-bottom-right-radius: 0;
+        padding: 36px;
+        backdrop-filter: blur(30px);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      }
+
+      .hero-main-image {
+        width: 100%;
+        aspect-ratio: 9/16;
+        background: rgba(255, 255, 255, 0.02);
         border-radius: 16px;
+        border-top-left-radius: 0;
+        border-bottom-right-radius: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.2rem;
-        color: rgba(255, 255, 255, 0.3);
-        border: 2px dashed rgba(255, 255, 255, 0.1);
+        color: var(--textSec);
+        border: 2px dashed var(--border);
+        font-size: 1rem;
+        text-align: center;
       }
 
-      .screenshot {
-        width: 100%;
-        border-radius: 16px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-      }
-
-      /* Feature Row */
       .feature-row {
         min-height: 100vh;
         display: flex;
@@ -250,11 +480,11 @@
       }
 
       .feature-row.left .feature-content {
-        transform: translateX(-100px);
+        transform: translateX(-80px);
       }
 
       .feature-row.right .feature-content {
-        transform: translateX(100px);
+        transform: translateX(80px);
       }
 
       .feature-row.visible .feature-content {
@@ -264,7 +494,7 @@
       .feature-content {
         display: flex;
         align-items: center;
-        gap: 80px;
+        gap: 100px;
         transition: transform 0.8s ease;
       }
 
@@ -277,53 +507,57 @@
       }
 
       .feature-text h2 {
-        font-size: 3rem;
+        font-size: 3.5rem;
         font-weight: 700;
-        margin-bottom: 25px;
-        letter-spacing: -0.02em;
+        margin-bottom: 28px;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        color: var(--text);
       }
 
       .feature-text p {
-        font-size: 1.3rem;
-        color: rgba(255, 255, 255, 0.6);
+        font-size: 1.25rem;
+        color: var(--textSec);
         line-height: 1.8;
         margin-bottom: 20px;
       }
 
       .feature-visual {
-        flex: 1;
-        background: rgba(255, 255, 255, 0.02);
-        border: 1px solid rgba(255, 255, 255, 0.05);
+        flex: 0 0 420px;
+        background: var(--card);
+        border: 2px solid var(--border);
         border-radius: 20px;
-        padding: 50px;
+        border-top-left-radius: 0;
+        border-bottom-right-radius: 0;
+        padding: 40px;
         backdrop-filter: blur(30px);
-        min-height: 400px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s ease;
+      }
+
+      .feature-visual:hover {
+        border-color: var(--mainLight);
+        transform: translateY(-5px);
       }
 
       .feature-placeholder {
         width: 100%;
-        height: 350px;
-        background: rgba(255, 255, 255, 0.03);
-        border-radius: 12px;
+        aspect-ratio: 9/16;
+        background: rgba(255, 255, 255, 0.02);
+        border-radius: 16px;
+        border-top-left-radius: 0;
+        border-bottom-right-radius: 0;
         display: flex;
         align-items: center;
         justify-content: center;
-        color: rgba(255, 255, 255, 0.3);
-        border: 2px dashed rgba(255, 255, 255, 0.1);
-        font-size: 1.1rem;
+        color: var(--textSec);
+        border: 2px dashed var(--border);
+        font-size: 1.05rem;
+        flex-direction: column;
       }
 
-      .feature-image {
-        width: 100%;
-        border-radius: 12px;
-      }
-
-      /* Tech Section */
       .tech-section {
-        padding: 120px 0;
+        padding: 140px 0;
         text-align: center;
         opacity: 0;
         transform: translateY(50px);
@@ -337,39 +571,42 @@
       }
 
       .section-title {
-        font-size: 3rem;
+        font-size: 3.5rem;
         font-weight: 700;
-        margin-bottom: 60px;
-        letter-spacing: -0.02em;
+        margin-bottom: 70px;
+        letter-spacing: -0.03em;
+        color: var(--text);
       }
 
       .tech-grid {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 20px;
+        gap: 16px;
       }
 
       .tech-badge {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        padding: 16px 35px;
+        background: var(--card);
+        border: 2px solid var(--border);
+        padding: 18px 38px;
         border-radius: 10px;
+        border-top-left-radius: 0;
+        border-bottom-right-radius: 0;
         backdrop-filter: blur(20px);
         font-size: 1.05rem;
-        color: rgba(255, 255, 255, 0.8);
-        font-weight: 500;
+        color: var(--text);
+        font-weight: 600;
         transition: all 0.3s ease;
       }
 
       .tech-badge:hover {
-        background: rgba(255, 255, 255, 0.06);
-        border-color: rgba(255, 255, 255, 0.15);
+        border-color: var(--main);
+        transform: translateY(-3px);
+        background: rgba(95, 95, 95, 0.1);
       }
 
-      /* CTA Section */
       .cta-section {
-        padding: 120px 0 150px;
+        padding: 140px 0 170px;
         text-align: center;
         opacity: 0;
         transform: translateY(50px);
@@ -383,31 +620,40 @@
       }
 
       .cta-box {
-        background: rgba(255, 255, 255, 0.03);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-        border-radius: 24px;
-        padding: 80px 60px;
+        background: var(--card);
+        border: 2px solid var(--border);
+        border-radius: 28px;
+        border-top-left-radius: 0;
+        border-bottom-right-radius: 0;
+        padding: 90px 70px;
         backdrop-filter: blur(40px);
-        max-width: 900px;
+        max-width: 950px;
         margin: 0 auto;
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.6);
       }
 
       .cta-box h2 {
-        font-size: 2.8rem;
-        margin-bottom: 20px;
+        font-size: 3.2rem;
+        margin-bottom: 24px;
         font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--text);
       }
 
       .cta-box p {
-        font-size: 1.3rem;
-        color: rgba(255, 255, 255, 0.6);
-        margin-bottom: 40px;
+        font-size: 1.35rem;
+        color: var(--textSec);
+        margin-bottom: 48px;
       }
 
-      /* Footer */
+      .cta-box .fancy {
+        max-width: 400px;
+        margin: 0 auto;
+      }
+
       footer {
-        padding: 60px 0 40px;
-        border-top: 1px solid rgba(255, 255, 255, 0.05);
+        padding: 70px 0 50px;
+        border-top: 2px solid var(--border);
         text-align: center;
         opacity: 0;
         transition: opacity 0.8s ease;
@@ -419,26 +665,50 @@
       }
 
       footer p {
-        color: rgba(255, 255, 255, 0.4);
+        color: var(--textSec);
         font-size: 0.95rem;
-        margin-bottom: 15px;
+        margin-bottom: 12px;
       }
 
       footer a {
-        color: rgba(255, 255, 255, 0.6);
+        color: var(--mainLight);
         text-decoration: none;
         transition: color 0.3s ease;
       }
 
       footer a:hover {
-        color: rgba(255, 255, 255, 0.9);
+        color: var(--main);
       }
 
-      /* Responsive */
       @media (max-width: 1024px) {
+        .hero-layout {
+          flex-direction: column;
+          gap: 50px;
+        }
+
+        .hero-image-container {
+          flex: 0 0 auto;
+          max-width: 380px;
+          width: 100%;
+        }
+
+        .hero-content {
+          text-align: center;
+        }
+
+        .hero-actions {
+          align-items: center;
+        }
+
         .feature-content {
           flex-direction: column !important;
-          gap: 50px;
+          gap: 60px;
+        }
+
+        .feature-visual {
+          flex: 0 0 auto;
+          max-width: 380px;
+          width: 100%;
         }
 
         .feature-row.left .feature-content,
@@ -457,31 +727,44 @@
 
       @media (max-width: 768px) {
         .hero h1 {
-          font-size: 2.8rem;
+          font-size: 3rem;
         }
 
         .hero p {
-          font-size: 1.2rem;
+          font-size: 1.15rem;
+        }
+
+        .button-row {
+          flex-direction: column;
+          width: 100%;
+        }
+
+        .fancy {
+          width: 100%;
         }
 
         .feature-text h2 {
-          font-size: 2rem;
+          font-size: 2.5rem;
         }
 
         .feature-text p {
-          font-size: 1.1rem;
+          font-size: 1.15rem;
         }
 
         .section-title {
-          font-size: 2.2rem;
+          font-size: 2.5rem;
         }
 
         .container {
-          padding: 0 20px;
+          padding: 0 24px;
         }
 
         .cta-box {
-          padding: 60px 30px;
+          padding: 60px 36px;
+        }
+
+        .cta-box h2 {
+          font-size: 2.5rem;
         }
 
         .progress-dots {
@@ -491,15 +774,14 @@
     </style>
   </head>
   <body>
-    <!-- Animated Background Grid -->
     <div class="background-grid">
-      <!-- Static dotted squares -->
+      <div class="gradient-orb orb-1"></div>
+      <div class="gradient-orb orb-2"></div>
+      <div class="gradient-orb orb-3"></div>
       <div class="grid-squares" id="gridSquares"></div>
-      <!-- Animated lines -->
       <div class="grid-lines" id="gridLines"></div>
     </div>
 
-    <!-- Progress Dots Navigation -->
     <div class="progress-dots">
       <div class="progress-dot" data-section="0"></div>
       <div class="progress-dot" data-section="1"></div>
@@ -511,40 +793,89 @@
       <div class="progress-dot" data-section="7"></div>
     </div>
 
-    <!-- Hero Section -->
     <section class="hero section" data-section="0">
       <div class="container">
-        <div class="hero-content">
-          <img src="assets/icon.jpg" alt="Fluxdesk" class="logo-img" />
-          <h1>Fluxdesk</h1>
-          <p>
-            High-performance remote desktop with ultra-low latency control. Built for Windows with
-            WebRTC and DirectX.
-          </p>
-          <a
-            href="https://github.com/Raoufbaa/Fluxdesk-Releases/releases/latest"
-            class="download-button"
-          >
-            Download for Windows
-          </a>
-        </div>
-      </div>
-    </section>
+        <div class="hero-layout">
+          <div class="hero-content">
+            <h1>Fluxdesk</h1>
+            <p>
+              High-performance remote desktop with ultra-low latency control. Built for Windows with
+              WebRTC and DirectX.
+            </p>
+            <div class="hero-actions">
+              <div class="download-stats">
+                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path
+                    d="M12 16L7 11h3V3h4v8h3l-5 5zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm14 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                  />
+                </svg>
+                <span id="downloadCount">Loading...</span> downloads
+              </div>
 
-    <!-- Main Screenshot -->
-    <section class="screenshot-section section" data-section="1">
-      <div class="container">
-        <div class="screenshot-container">
-          <!-- <img src="assets/screenshot-main.jpg" alt="Fluxdesk Interface" class="screenshot"> -->
-          <div class="screenshot-placeholder">
-            Main App Screenshot<br />
-            <small>(assets/screenshot-main.jpg)</small>
+              <div class="button-row">
+                <a
+                  href="https://github.com/Raoufbaa/Fluxdesk-Releases/releases/latest"
+                  class="fancy"
+                >
+                  <span class="topKey"></span>
+                  <span class="text">Download for Windows</span>
+                  <span class="bottomKey1"></span>
+                  <span class="bottomKey2"></span>
+                </a>
+                <a href="https://raoufbakhti.is-a.dev" style="width: 40%" class="fancy secondary">
+                  <span class="topKey"></span>
+                  <span class="text">My Portfolio</span>
+                  <span class="bottomKey1"></span>
+                  <span class="bottomKey2"></span>
+                </a>
+              </div>
+              <div class="contact-box">
+                <h3>Contact & Community</h3>
+                <p>
+                  <svg class="contact-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"
+                    />
+                  </svg>
+                  <a href="mailto:raoufbakhti32@gmail.com">raoufbakhti32@gmail.com</a>
+                </p>
+                <p>
+                  <svg class="contact-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"
+                    />
+                  </svg>
+                  <span>0798709091</span>
+                </p>
+                <p>
+                  <svg class="contact-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"
+                    />
+                  </svg>
+                  <a href="https://raoufbakhti.is-a.dev" target="_blank">raoufbakhti.is-a.dev</a>
+                </p>
+                <p>
+                  <svg class="contact-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                      d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515a.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0a12.64 12.64 0 0 0-.617-1.25a.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057a19.9 19.9 0 0 0 5.993 3.03a.078.078 0 0 0 .084-.028a14.09 14.09 0 0 0 1.226-1.994a.076.076 0 0 0-.041-.106a13.107 13.107 0 0 1-1.872-.892a.077.077 0 0 1-.008-.128a10.2 10.2 0 0 0 .372-.292a.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127a12.299 12.299 0 0 1-1.873.892a.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028a19.839 19.839 0 0 0 6.002-3.03a.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.956-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419c0-1.333.955-2.419 2.157-2.419c1.21 0 2.176 1.096 2.157 2.42c0 1.333-.946 2.418-2.157 2.418z"
+                    />
+                  </svg>
+                  <a href="https://discord.gg/aSrxCq2xuy" target="_blank">Join Discord Server</a>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="hero-image-container">
+            <div class="hero-main-image">
+              Hero Image<br />(Portrait 9:16)<br />
+              <small>assets/hero-main.jpg</small>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Feature 1 - Left -->
     <section class="feature-row left section" data-section="2">
       <div class="container">
         <div class="feature-content">
@@ -560,14 +891,15 @@
             </p>
           </div>
           <div class="feature-visual">
-            <!-- <img src="assets/feature-1.jpg" alt="Low Latency" class="feature-image"> -->
-            <div class="feature-placeholder">Feature Image 1</div>
+            <div class="feature-placeholder">
+              Feature 1<br />(Portrait 9:16)<br />
+              <small>assets/feature-1.jpg</small>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Feature 2 - Right -->
     <section class="feature-row right section" data-section="3">
       <div class="container">
         <div class="feature-content">
@@ -583,14 +915,15 @@
             </p>
           </div>
           <div class="feature-visual">
-            <!-- <img src="assets/feature-2.jpg" alt="DirectX" class="feature-image"> -->
-            <div class="feature-placeholder">Feature Image 2</div>
+            <div class="feature-placeholder">
+              Feature 2<br />(Portrait 9:16)<br />
+              <small>assets/feature-2.jpg</small>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Feature 3 - Left -->
     <section class="feature-row left section" data-section="4">
       <div class="container">
         <div class="feature-content">
@@ -606,14 +939,15 @@
             </p>
           </div>
           <div class="feature-visual">
-            <!-- <img src="assets/feature-3.jpg" alt="Adaptive Quality" class="feature-image"> -->
-            <div class="feature-placeholder">Feature Image 3</div>
+            <div class="feature-placeholder">
+              Feature 3<br />(Portrait 9:16)<br />
+              <small>assets/feature-3.jpg</small>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Feature 4 - Right -->
     <section class="feature-row right section" data-section="5">
       <div class="container">
         <div class="feature-content">
@@ -629,14 +963,15 @@
             </p>
           </div>
           <div class="feature-visual">
-            <!-- <img src="assets/feature-4.jpg" alt="Mobile Interface" class="feature-image"> -->
-            <div class="feature-placeholder">Feature Image 4</div>
+            <div class="feature-placeholder">
+              Feature 4<br />(Portrait 9:16)<br />
+              <small>assets/feature-4.jpg</small>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Technology -->
     <section class="tech-section section" data-section="6">
       <div class="container">
         <h2 class="section-title">Modern Technology Stack</h2>
@@ -652,40 +987,55 @@
       </div>
     </section>
 
-    <!-- CTA -->
     <section class="cta-section section" data-section="7">
       <div class="container">
         <div class="cta-box">
           <h2>Ready to Get Started?</h2>
           <p>Download Fluxdesk and start controlling your PC remotely in minutes.</p>
-          <a
-            href="https://github.com/Raoufbaa/Fluxdesk-Releases/releases/latest"
-            class="download-button"
-          >
-            Download Now
+          <a href="https://github.com/Raoufbaa/Fluxdesk-Releases/releases/latest" class="fancy">
+            <span class="topKey"></span>
+            <span class="text">Download Now</span>
+            <span class="bottomKey1"></span>
+            <span class="bottomKey2"></span>
           </a>
         </div>
       </div>
     </section>
 
-    <!-- Footer -->
     <footer>
       <div class="container">
         <p>&copy; 2025 Fluxdesk. All rights reserved.</p>
         <p>
           Contact: <a href="mailto:raoufbakhti32@gmail.com">raoufbakhti32@gmail.com</a> • Phone:
-          +213 79 87 09 01
+          0798709091
         </p>
-        <p>Hassi Bahbah, Djelfa, Algeria</p>
+        <p>
+          Portfolio:
+          <a href="https://raoufbakhti.is-a.dev" target="_blank">raoufbakhti.is-a.dev</a> • Hassi
+          Bahbah, Djelfa, Algeria
+        </p>
       </div>
     </footer>
 
-    <!-- JavaScript -->
     <script>
-      // Generate static dotted squares
+      // Load download count from generated JSON file
+      async function loadDownloadCount() {
+        try {
+          const response = await fetch('downloads.json?' + Date.now()); // Cache bust
+          const data = await response.json();
+          document.getElementById('downloadCount').textContent = data.count.toLocaleString();
+        } catch (error) {
+          console.error('Error loading download count:', error);
+          document.getElementById('downloadCount').textContent = '0';
+        }
+      }
+
+      loadDownloadCount();
+
+      // Grid generation and animation code...
       function generateSquares() {
         const container = document.getElementById('gridSquares');
-        const squareSize = 60;
+        const squareSize = 80;
         const cols = Math.ceil(window.innerWidth / squareSize) + 1;
         const rows = Math.ceil(window.innerHeight / squareSize) + 1;
 
@@ -700,18 +1050,16 @@
         }
       }
 
-      // Generate grid lines and animate them like snakes
       let lineGrid = { horizontal: [], vertical: [] };
 
       function generateLines() {
         const container = document.getElementById('gridLines');
-        const squareSize = 60;
+        const squareSize = 80;
         const cols = Math.ceil(window.innerWidth / squareSize) + 1;
         const rows = Math.ceil(window.innerHeight / squareSize) + 1;
 
         lineGrid = { horizontal: [], vertical: [] };
 
-        // Create horizontal lines
         for (let row = 0; row <= rows; row++) {
           lineGrid.horizontal[row] = [];
           for (let col = 0; col < cols; col++) {
@@ -719,14 +1067,11 @@
             line.className = 'grid-line horizontal';
             line.style.left = `${col * squareSize}px`;
             line.style.top = `${row * squareSize}px`;
-            line.dataset.row = row;
-            line.dataset.col = col;
             container.appendChild(line);
             lineGrid.horizontal[row][col] = line;
           }
         }
 
-        // Create vertical lines
         for (let col = 0; col <= cols; col++) {
           lineGrid.vertical[col] = [];
           for (let row = 0; row < rows; row++) {
@@ -734,16 +1079,13 @@
             line.className = 'grid-line vertical';
             line.style.left = `${col * squareSize}px`;
             line.style.top = `${row * squareSize}px`;
-            line.dataset.row = row;
-            line.dataset.col = col;
             container.appendChild(line);
             lineGrid.vertical[col][row] = line;
           }
         }
 
-        // Start 50 snake animations
-        for (let i = 0; i < 50; i++) {
-          setTimeout(() => animateSnake(), i * 200);
+        for (let i = 0; i < 30; i++) {
+          setTimeout(() => animateSnake(), i * 300);
         }
       }
 
@@ -752,22 +1094,19 @@
         const rows = lineGrid.horizontal.length;
         const cols = lineGrid.vertical.length;
 
-        // Random starting position
         let isHorizontal = Math.random() > 0.5;
         let row = Math.floor(Math.random() * rows);
         let col = Math.floor(Math.random() * cols);
 
         const visited = new Set();
-        const maxLength = 30 + Math.floor(Math.random() * 30);
+        const maxLength = 25 + Math.floor(Math.random() * 25);
 
-        // Build random path
         while (path.length < maxLength) {
           const key = `${isHorizontal ? 'h' : 'v'}-${row}-${col}`;
 
           if (visited.has(key)) break;
           visited.add(key);
 
-          // Add current line to path
           if (isHorizontal && lineGrid.horizontal[row] && lineGrid.horizontal[row][col]) {
             path.push(lineGrid.horizontal[row][col]);
           } else if (!isHorizontal && lineGrid.vertical[col] && lineGrid.vertical[col][row]) {
@@ -776,7 +1115,6 @@
             break;
           }
 
-          // Choose random direction
           const directions = [];
 
           if (isHorizontal) {
@@ -805,9 +1143,8 @@
           col = next.col;
         }
 
-        // Animate the path
         let currentIndex = 0;
-        const snakeLength = 15;
+        const snakeLength = 12;
 
         function moveSnake() {
           if (currentIndex < path.length) {
@@ -822,20 +1159,18 @@
           currentIndex++;
 
           if (currentIndex < path.length + snakeLength) {
-            setTimeout(moveSnake, 40);
+            setTimeout(moveSnake, 50);
           } else {
-            setTimeout(() => animateSnake(), Math.random() * 3000 + 1000);
+            setTimeout(() => animateSnake(), Math.random() * 4000 + 2000);
           }
         }
 
         moveSnake();
       }
 
-      // Initialize
       generateSquares();
       generateLines();
 
-      // Regenerate on resize
       let resizeTimeout;
       window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
@@ -847,7 +1182,6 @@
         }, 250);
       });
 
-      // Intersection Observer for scroll animations
       const observerOptions = {
         threshold: 0.2,
         rootMargin: '0px',
