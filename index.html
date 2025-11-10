@@ -248,7 +248,7 @@
       .fancy {
         display: flex;
         align-items: center;
-        justify-content: start;
+        justify-content: space-between;
         background: #00272c;
         border: 3px solid #003b45;
         height: 60px;
@@ -263,7 +263,7 @@
         margin: 0;
         outline: none;
         overflow: visible;
-        padding: 15px;
+        padding: 15px 20px 15px 15px;
         width: 60%;
         position: relative;
         text-align: center;
@@ -300,6 +300,22 @@
         text-transform: capitalize;
         text-decoration: none;
         color: white;
+        flex: 1;
+      }
+
+      .fancy .download-counter {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+      }
+
+      .fancy .download-counter svg {
+        width: 14px;
+        height: 14px;
+        fill: #00ffea;
       }
 
       .fancy .topKey {
@@ -349,6 +365,11 @@
         padding-left: 1.5em;
       }
 
+      .fancy:hover {
+        background: rgba(0, 255, 234, 0.2);
+        border-color: rgba(0, 255, 234, 0.4);
+      }
+
       .fancy:hover .topKey {
         left: -2px;
         width: 0px;
@@ -367,26 +388,6 @@
 
       .fancy.secondary:hover {
         background: var(--ts);
-      }
-
-      .download-stats {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 10px 18px;
-        background: rgba(0, 255, 234, 0.08);
-        border: 1px solid rgba(0, 255, 234, 0.2);
-        border-radius: 8px;
-        font-size: 0.9rem;
-        color: #00ffea;
-        font-weight: 600;
-        margin-bottom: 10px;
-      }
-
-      .download-stats svg {
-        width: 18px;
-        height: 18px;
-        fill: #00ffea;
       }
 
       .contact-box {
@@ -741,6 +742,18 @@
 
         .fancy {
           width: 100%;
+          height: auto;
+          gap: 10px;
+          padding: 15px;
+        }
+
+        .fancy .text {
+          padding-left: 0;
+          text-align: center;
+        }
+
+        .fancy .download-counter {
+          align-self: center;
         }
 
         .feature-text h2 {
@@ -803,15 +816,6 @@
               WebRTC and DirectX.
             </p>
             <div class="hero-actions">
-              <div class="download-stats">
-                <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                  <path
-                    d="M12 16L7 11h3V3h4v8h3l-5 5zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm14 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
-                  />
-                </svg>
-                <span id="downloadCount">Loading...</span> downloads
-              </div>
-
               <div class="button-row">
                 <a
                   href="https://github.com/Raoufbaa/Fluxdesk-Releases/releases/latest"
@@ -819,6 +823,14 @@
                 >
                   <span class="topKey"></span>
                   <span class="text">Download for Windows</span>
+                  <span class="download-counter">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path
+                        d="M12 16L7 11h3V3h4v8h3l-5 5zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm14 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                      />
+                    </svg>
+                    <span id="downloadCount">...</span>
+                  </span>
                   <span class="bottomKey1"></span>
                   <span class="bottomKey2"></span>
                 </a>
@@ -995,6 +1007,14 @@
           <a href="https://github.com/Raoufbaa/Fluxdesk-Releases/releases/latest" class="fancy">
             <span class="topKey"></span>
             <span class="text">Download Now</span>
+            <span class="download-counter">
+              <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path
+                  d="M12 16L7 11h3V3h4v8h3l-5 5zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-7 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm14 0c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+                />
+              </svg>
+              <span id="downloadCount2">...</span>
+            </span>
             <span class="bottomKey1"></span>
             <span class="bottomKey2"></span>
           </a>
@@ -1018,47 +1038,48 @@
     </footer>
 
     <script>
-      // Load download count from generated JSON file
-      // Replace the loadDownloadCount function with this improved version:
+      // Fetch download count directly from GitHub API
       async function loadDownloadCount() {
         try {
-          const response = await fetch('downloads.json?' + Date.now());
+          const apiResponse = await fetch(
+            'https://api.github.com/repos/Raoufbaa/Fluxdesk-Releases/releases'
+          );
+          const releases = await apiResponse.json();
 
-          // Check if the file exists
-          if (!response.ok) {
-            throw new Error('File not found');
+          let totalDownloads = 0;
+
+          // Loop through each release and sum download counts
+          for (const release of releases) {
+            if (release.assets && Array.isArray(release.assets)) {
+              for (const asset of release.assets) {
+                totalDownloads += asset.download_count || 0;
+              }
+            }
           }
 
-          const data = await response.json();
-          document.getElementById('downloadCount').textContent = data.count.toLocaleString();
+          // Update both counters
+          document.getElementById('downloadCount').textContent = totalDownloads.toLocaleString();
+          const counter2 = document.getElementById('downloadCount2');
+          if (counter2) {
+            counter2.textContent = totalDownloads.toLocaleString();
+          }
         } catch (error) {
-          console.log('Download counter not ready yet. Fetching from GitHub API...');
-
-          // Fallback: Fetch directly from GitHub API
-          try {
-            const apiResponse = await fetch(
-              'https://api.github.com/repos/Raoufbaa/Fluxdesk-Releases/releases'
-            );
-            const releases = await apiResponse.json();
-
-            let totalDownloads = 0;
-            releases.forEach((release) => {
-              release.assets.forEach((asset) => {
-                totalDownloads += asset.download_count;
-              });
-            });
-
-            document.getElementById('downloadCount').textContent = totalDownloads.toLocaleString();
-          } catch (apiError) {
-            console.error('Error fetching from API:', apiError);
-            document.getElementById('downloadCount').textContent = '0';
+          console.error('Error fetching download count:', error);
+          document.getElementById('downloadCount').textContent = 'N/A';
+          const counter2 = document.getElementById('downloadCount2');
+          if (counter2) {
+            counter2.textContent = 'N/A';
           }
         }
       }
 
+      // Load count on page load
       loadDownloadCount();
 
-      // Grid generation and animation code...
+      // Optional: Refresh count every 5 minutes
+      setInterval(loadDownloadCount, 5 * 60 * 1000);
+
+      // Generate grid squares
       function generateSquares() {
         const container = document.getElementById('gridSquares');
         const squareSize = 80;
