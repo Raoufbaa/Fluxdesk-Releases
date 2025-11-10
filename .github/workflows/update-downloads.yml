@@ -1,0 +1,45 @@
+name: Update Download Counter
+
+on:
+  schedule:
+    # Run every hour
+    - cron: '0 * * * *'
+  workflow_dispatch: # Allow manual trigger
+  release:
+    types: [published]
+
+jobs:
+  update-counter:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch download counts from GitHub API
+        id: downloads
+        run: |
+          # Fetch all releases and sum up download counts
+          TOTAL_DOWNLOADS=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/releases" | \
+            jq '[.[].assets[].download_count] | add // 0')
+          
+          echo "Total downloads: $TOTAL_DOWNLOADS"
+          echo "count=$TOTAL_DOWNLOADS" >> $GITHUB_OUTPUT
+          
+          # Create JSON file
+          cat > downloads.json << EOF
+          {
+            "count": $TOTAL_DOWNLOADS,
+            "updated": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")"
+          }
+          EOF
+
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add downloads.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Update download counter: ${{ steps.downloads.outputs.count }}" && git push)
