@@ -2,7 +2,7 @@
   "LatestVersion": "1.2.56",
   "DownloadUrl": "https://github.com/Raoufbaa/Fluxdesk-Releases/releases/latest",
   "ReleaseNotes": "Bug fixes and improvements",
-  "DisabledVersions": ["1.0.0"],["1.2.54"],
+  "DisabledVersions": ["1.0.0"],["1.2.55"],
   "AppDisabled": true,
   "AppDisabledMessage": "The app is currently down for maintenance."
 }
