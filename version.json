@@ -3,6 +3,7 @@
   "ReleaseNotes": "Bug fixes and improvements",
   "SupportedVersions": [
     "1.2.55",
+    "1.2.56",
     "1.3.0",
     "1.4.0"
   ],
