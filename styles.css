@@ -436,6 +436,8 @@ body {
   backdrop-filter: blur(30px);
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
   perspective: 1000px;
+  width: 430px;
+  flex-shrink: 0;
 }
 
 .hero-main-image {
@@ -453,6 +455,8 @@ body {
   font-size: 1rem;
   text-align: center;
   padding: 5px;
+  position: relative;
+  overflow: hidden;
 }
 
 .heroimg {
@@ -462,8 +466,16 @@ body {
   border-radius: 16px;
   border-top-left-radius: 0;
   border-bottom-right-radius: 0;
-  transition: transform 0.1s ease-out;
+  transition: transform 0.1s ease-out, opacity 0.8s ease-in-out;
   transform-style: preserve-3d;
+  position: absolute;
+  top: 0;
+  left: 0;
+  opacity: 0;
+}
+
+.heroimg.active {
+  opacity: 1;
 }
 
 .feature-row {

@@ -227,11 +227,45 @@ document.querySelectorAll('.progress-dot').forEach((dot) => {
   });
 });
 
-// 3D Image Tilt Effect (with reduced sensitivity)
-const heroImg = document.querySelector('.heroimg');
+// Hero Image Slider with 3D Tilt Effect
+const heroImages = document.querySelectorAll('.heroimg');
 const heroImageContainer = document.querySelector('.hero-image-container');
+let currentImageIndex = 0;
+let sliderInterval;
+let isHovering = false;
 
-if (heroImg && heroImageContainer) {
+function showNextImage() {
+  if (isHovering) return;
+  
+  heroImages[currentImageIndex].classList.remove('active');
+  currentImageIndex = (currentImageIndex + 1) % heroImages.length;
+  heroImages[currentImageIndex].classList.add('active');
+}
+
+function startSlider() {
+  sliderInterval = setInterval(showNextImage, 5000);
+}
+
+function stopSlider() {
+  clearInterval(sliderInterval);
+}
+
+if (heroImages.length > 0 && heroImageContainer) {
+  // Start the slider
+  startSlider();
+  
+  // Pause on hover
+  heroImageContainer.addEventListener('mouseenter', () => {
+    isHovering = true;
+    stopSlider();
+  });
+  
+  heroImageContainer.addEventListener('mouseleave', () => {
+    isHovering = false;
+    startSlider();
+  });
+  
+  // 3D Tilt Effect (with reduced sensitivity)
   heroImageContainer.addEventListener('mousemove', (e) => {
     const rect = heroImageContainer.getBoundingClientRect();
     const x = e.clientX - rect.left;
@@ -240,13 +274,15 @@ if (heroImg && heroImageContainer) {
     const centerX = rect.width / 2;
     const centerY = rect.height / 2;
 
-    const rotateX = ((y - centerY) / centerY) * -8; // Reduced sensitivity
-    const rotateY = ((x - centerX) / centerX) * 8; // Reduced sensitivity
+    const rotateX = ((y - centerY) / centerY) * -8;
+    const rotateY = ((x - centerX) / centerX) * 8;
 
-    heroImg.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
+    const activeImg = heroImages[currentImageIndex];
+    activeImg.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
   });
 
   heroImageContainer.addEventListener('mouseleave', () => {
-    heroImg.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+    const activeImg = heroImages[currentImageIndex];
+    activeImg.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
   });
 }
