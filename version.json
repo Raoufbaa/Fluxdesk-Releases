@@ -2,12 +2,12 @@
   "DownloadUrl": "https://github.com/Raoufbaa/Fluxdesk-Releases/releases/latest",
   "ReleaseNotes": "Bug fixes and improvements",
   "SupportedVersions": [
-    "1.2.62",
     "1.2.63",
     "1.2.64",
     "1.2.65",
     "1.2.66",
     "1.2.67",
+    "1.2.68",
   ],
   "AppDisabled": false,
   "AppDisabledMessage": "The app is currently down for maintenance."
