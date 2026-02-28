@@ -26,7 +26,7 @@
 
 ## 📋 Overview
 
-**Fluxdesk** is a cutting-edge remote desktop application built with **.NET 9** and **Avalonia UI**, designed for ultra-low latency control and high-performance screen streaming. It combines **DirectX Desktop Duplication API** for hardware-accelerated screen capture with **WebRTC DataChannels** for near-instantaneous input transmission, delivering a smooth remote desktop experience optimized for gaming, productivity, and real-time applications.
+**Fluxdesk** is a cutting-edge remote desktop application built with **.NET 10** and **Avalonia UI**, designed for ultra-low latency control and high-performance screen streaming. It combines **DirectX Desktop Duplication API** for hardware-accelerated screen capture with **WebRTC DataChannels** for near-instantaneous input transmission, delivering a smooth remote desktop experience optimized for gaming, productivity, and real-time applications.
 
 ### ✨ Key Highlights
 
