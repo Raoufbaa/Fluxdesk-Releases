@@ -1,45 +1,66 @@
-// Fetch download count directly from GitHub API
+// ===== Download Counter with localStorage Cache =====
+const DL_CACHE_KEY = 'fluxdesk_dl_cache';
+const DL_CACHE_TTL = 1000 * 60 * 30; // 30 minutes
+
+function setDownloadDisplay(value) {
+  const display = typeof value === 'number' ? value.toLocaleString() : value;
+  document.getElementById('downloadCount').textContent = display;
+  const counter2 = document.getElementById('downloadCount2');
+  if (counter2) counter2.textContent = display;
+}
+
 async function loadDownloadCount() {
+  const cached = JSON.parse(localStorage.getItem(DL_CACHE_KEY) || 'null');
+
+  // Serve immediately from cache if still fresh (avoids flash of "...")
+  if (cached && Date.now() - cached.ts < DL_CACHE_TTL) {
+    setDownloadDisplay(cached.count);
+    return;
+  }
+
   try {
-    const apiResponse = await fetch(
+    const res = await fetch(
       'https://api.github.com/repos/Raoufbaa/Fluxdesk-Releases/releases'
     );
-    const releases = await apiResponse.json();
 
-    let totalDownloads = 0;
-
-    // Loop through each release and sum download counts
-    for (const release of releases) {
-      if (release.assets && Array.isArray(release.assets)) {
-        for (const asset of release.assets) {
-          totalDownloads += asset.download_count || 0;
-        }
+    // Rate limit hit — fall back to stale cache silently
+    if (res.status === 403) {
+      if (cached) {
+        setDownloadDisplay(cached.count);
+      } else {
+        setDownloadDisplay('—');
       }
+      const reset = res.headers.get('X-RateLimit-Reset');
+      if (reset) console.warn(`GitHub rate limit resets at ${new Date(reset * 1000).toLocaleTimeString()}`);
+      return;
     }
 
-    // Update both counters
-    document.getElementById('downloadCount').textContent = totalDownloads.toLocaleString();
-    const counter2 = document.getElementById('downloadCount2');
-    if (counter2) {
-      counter2.textContent = totalDownloads.toLocaleString();
-    }
-  } catch (error) {
-    console.error('Error fetching download count:', error);
-    document.getElementById('downloadCount').textContent = 'N/A';
-    const counter2 = document.getElementById('downloadCount2');
-    if (counter2) {
-      counter2.textContent = 'N/A';
+    if (!res.ok) throw new Error(`GitHub API ${res.status}`);
+
+    const releases = await res.json();
+    const total = releases
+      .flatMap((r) => r.assets || [])
+      .reduce((sum, a) => sum + (a.download_count || 0), 0);
+
+    localStorage.setItem(DL_CACHE_KEY, JSON.stringify({ count: total, ts: Date.now() }));
+    setDownloadDisplay(total);
+  } catch (err) {
+    console.error('Failed to fetch download count:', err);
+    // On any network error, serve stale cache instead of breaking the UI
+    if (cached) {
+      setDownloadDisplay(cached.count);
+    } else {
+      setDownloadDisplay('—');
     }
   }
 }
 
-// Load count on page load
 loadDownloadCount();
 
-// Optional: Refresh count every 5 minutes
-setInterval(loadDownloadCount, 5 * 60 * 1000);
+// Re-check every 30 min (serves from cache until TTL expires, then fetches once)
+setInterval(loadDownloadCount, DL_CACHE_TTL);
 
-// Generate grid squares
+// ===== Grid Background =====
 function generateSquares() {
   const container = document.getElementById('gridSquares');
   const squareSize = 80;
@@ -110,7 +131,6 @@ function animateSnake() {
 
   while (path.length < maxLength) {
     const key = `${isHorizontal ? 'h' : 'v'}-${row}-${col}`;
-
     if (visited.has(key)) break;
     visited.add(key);
 
@@ -157,14 +177,11 @@ function animateSnake() {
     if (currentIndex < path.length) {
       path[currentIndex].classList.add('active');
     }
-
     const tailIndex = currentIndex - snakeLength;
     if (tailIndex >= 0) {
       path[tailIndex].classList.remove('active');
     }
-
     currentIndex++;
-
     if (currentIndex < path.length + snakeLength) {
       setTimeout(moveSnake, 50);
     } else {
@@ -189,6 +206,7 @@ window.addEventListener('resize', () => {
   }, 250);
 });
 
+// ===== Section Observer & Progress Dots =====
 const observerOptions = {
   threshold: 0.2,
   rootMargin: '0px',
@@ -209,13 +227,8 @@ document.querySelectorAll('.section').forEach((section) => {
 });
 
 function updateProgressDots(activeIndex) {
-  const dots = document.querySelectorAll('.progress-dot');
-  dots.forEach((dot, index) => {
-    if (index <= activeIndex) {
-      dot.classList.add('active');
-    } else {
-      dot.classList.remove('active');
-    }
+  document.querySelectorAll('.progress-dot').forEach((dot, index) => {
+    dot.classList.toggle('active', index <= parseInt(activeIndex));
   });
 }
 
@@ -227,7 +240,7 @@ document.querySelectorAll('.progress-dot').forEach((dot) => {
   });
 });
 
-// Hero Image Slider with 3D Tilt Effect
+// ===== Hero Image Slider with 3D Tilt =====
 const heroImages = document.querySelectorAll('.heroimg');
 const heroImageContainer = document.querySelector('.hero-image-container');
 let currentImageIndex = 0;
@@ -236,7 +249,6 @@ let isHovering = false;
 
 function showNextImage() {
   if (isHovering) return;
-  
   heroImages[currentImageIndex].classList.remove('active');
   currentImageIndex = (currentImageIndex + 1) % heroImages.length;
   heroImages[currentImageIndex].classList.add('active');
@@ -251,38 +263,28 @@ function stopSlider() {
 }
 
 if (heroImages.length > 0 && heroImageContainer) {
-  // Start the slider
   startSlider();
-  
-  // Pause on hover
+
   heroImageContainer.addEventListener('mouseenter', () => {
     isHovering = true;
     stopSlider();
   });
-  
+
   heroImageContainer.addEventListener('mouseleave', () => {
     isHovering = false;
     startSlider();
+    const activeImg = heroImages[currentImageIndex];
+    activeImg.style.transform =
+      'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
   });
-  
-  // 3D Tilt Effect (with reduced sensitivity)
+
   heroImageContainer.addEventListener('mousemove', (e) => {
     const rect = heroImageContainer.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
-
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-
-    const rotateX = ((y - centerY) / centerY) * -8;
-    const rotateY = ((x - centerX) / centerX) * 8;
-
-    const activeImg = heroImages[currentImageIndex];
-    activeImg.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
-  });
-
-  heroImageContainer.addEventListener('mouseleave', () => {
-    const activeImg = heroImages[currentImageIndex];
-    activeImg.style.transform = 'perspective(1000px) rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)';
+    const rotateX = ((y - rect.height / 2) / (rect.height / 2)) * -8;
+    const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 8;
+    heroImages[currentImageIndex].style.transform =
+      `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.01, 1.01, 1.01)`;
   });
 }
