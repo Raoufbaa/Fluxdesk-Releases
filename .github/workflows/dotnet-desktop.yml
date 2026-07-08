@@ -19,6 +19,13 @@ jobs:
       message: ${{ steps.info.outputs.message }}
       timestamp: ${{ steps.info.outputs.timestamp }}
     steps:
+      - name: Check RELEASES_PAT secret
+        run: |
+          if [ -z "${{ secrets.RELEASES_PAT }}" ]; then
+            echo "::error::The 'RELEASES_PAT' secret is not set in the Fluxdesk-Releases repository. Please go to Settings -> Secrets and variables -> Actions and add 'RELEASES_PAT' with your Personal Access Token containing read permissions for the private Fluxdesk repository."
+            exit 1
+          fi
+
       - name: Checkout Source Code
         uses: actions/checkout@v4
         with:
