@@ -1,0 +1,254 @@
+name: Fluxdesk CI/CD (Releases)
+
+on:
+  repository_dispatch:
+    types: [ "fluxdesk_push" ]
+  workflow_dispatch:
+    inputs:
+      sha:
+        description: 'Commit SHA to build (optional, defaults to main branch)'
+        required: false
+        type: string
+        default: 'main'
+
+jobs:
+  get-commit-info:
+    runs-on: ubuntu-latest
+    outputs:
+      sha: ${{ steps.info.outputs.sha }}
+      message: ${{ steps.info.outputs.message }}
+      timestamp: ${{ steps.info.outputs.timestamp }}
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+        with:
+          repository: Raoufbaa/Fluxdesk
+          ref: ${{ github.event.client_payload.sha || github.event.inputs.sha || 'main' }}
+          token: ${{ secrets.RELEASES_PAT }}
+          fetch-depth: 1
+
+      - name: Extract Commit Information
+        id: info
+        run: |
+          SHA=$(git rev-parse HEAD)
+          TIMESTAMP=$(git log -1 --format=%cI)
+          
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "timestamp=$TIMESTAMP" >> "$GITHUB_OUTPUT"
+          
+          {
+            echo "message<<EOF"
+            git log -1 --format=%B
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+  build:
+    needs: get-commit-info
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: write
+
+    strategy:
+      matrix:
+        include:
+          - os: windows-latest
+            runtime: win-x64
+            platform: windows
+          - os: ubuntu-latest
+            runtime: linux-x64
+            platform: linux
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        repository: Raoufbaa/Fluxdesk
+        ref: ${{ needs.get-commit-info.outputs.sha }}
+        token: ${{ secrets.RELEASES_PAT }}
+        fetch-depth: 0
+
+    - name: Install .NET 10
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 10.0.x
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run tests
+      run: dotnet test --configuration Release --no-build --verbosity normal
+      continue-on-error: true
+
+    - name: Publish
+      run: dotnet publish --configuration Release --runtime ${{ matrix.runtime }} --self-contained true -p:PublishSingleFile=true -p:PublishTrimmed=false --output ./publish
+
+    # ── Windows: ngrok + ADB (ADB handled by Inno Setup) ──
+    - name: Download ngrok (Windows)
+      if: matrix.platform == 'windows'
+      shell: pwsh
+      run: |
+        Invoke-WebRequest -Uri "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-windows-amd64.zip" -OutFile ngrok.zip
+        Expand-Archive -Path ngrok.zip -DestinationPath ./ngrok -Force
+        Copy-Item -Path ./ngrok/ngrok.exe -Destination ./publish/ngrok.exe
+        Write-Host "ngrok.exe added successfully!"
+
+    - name: Download ADB (Windows)
+      if: matrix.platform == 'windows'
+      shell: pwsh
+      run: |
+        Write-Host "Downloading ADB platform-tools for Windows..."
+        Invoke-WebRequest -Uri "https://dl.google.com/android/repository/platform-tools-latest-windows.zip" -OutFile platform-tools-windows.zip
+        Expand-Archive -Path platform-tools-windows.zip -DestinationPath ./adb-windows -Force
+        Write-Host "ADB extracted to ./adb-windows/platform-tools/"
+
+    # ── Linux: ngrok + ADB bundled ──
+    - name: Download ngrok (Linux)
+      if: matrix.platform == 'linux'
+      run: |
+        mkdir -p ./ngrok
+        curl -o ngrok.tgz "https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v3-stable-linux-amd64.tgz"
+        tar -xzf ngrok.tgz -C ./ngrok
+        cp ./ngrok/ngrok ./publish/ngrok
+        chmod +x ./publish/ngrok
+        echo "ngrok added successfully!"
+
+    - name: Download ADB (Linux)
+      if: matrix.platform == 'linux'
+      run: |
+        curl -o platform-tools-linux.zip "https://dl.google.com/android/repository/platform-tools-latest-linux.zip"
+        unzip platform-tools-linux.zip -d ./adb-linux
+        cp ./adb-linux/platform-tools/adb ./publish/adb
+        chmod +x ./publish/adb
+        echo "ADB bundled successfully!"
+
+    # ── Windows: Compile Inno Setup installer ──
+    - name: Compile Inno Setup Script
+      if: matrix.platform == 'windows'
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.2
+      with:
+        path: setup.iss
+        options: /O+
+
+    # ── Linux: Package as tar.gz ──
+    - name: Package Linux Build
+      if: matrix.platform == 'linux'
+      run: tar -czf Fluxdesk-linux-x64.tar.gz -C ./publish .
+
+    # ── Upload artifacts ──
+    - name: Upload Windows Artifact
+      if: matrix.platform == 'windows'
+      uses: actions/upload-artifact@v4
+      with:
+        name: windows-installer
+        path: ./Output/Fluxdesk_Setup.exe
+        retention-days: 90
+
+    - name: Upload Linux Artifact
+      if: matrix.platform == 'linux'
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux-package
+        path: Fluxdesk-linux-x64.tar.gz
+        retention-days: 90
+
+  release:
+    needs: [get-commit-info, build]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+    - name: Download all artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ./artifacts
+
+    - name: Generate version tag
+      id: tag_version
+      run: |
+        run_number="${{ github.run_number }}"
+        version="v1.2.${run_number}"
+        echo "version=$version" >> $GITHUB_OUTPUT
+        echo "Generated version: $version"
+
+    - name: Create Versioned Release
+      uses: softprops/action-gh-release@v2
+      with:
+        repository: Raoufbaa/Fluxdesk-Releases
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag_name: ${{ steps.tag_version.outputs.version }}
+        name: "Fluxdesk ${{ steps.tag_version.outputs.version }}"
+        body: |
+          ## Fluxdesk Release ${{ steps.tag_version.outputs.version }}
+
+          **Build Date:** ${{ needs.get-commit-info.outputs.timestamp }}
+          **Commit:** ${{ needs.get-commit-info.outputs.sha }}
+
+          ### Changes
+          ${{ needs.get-commit-info.outputs.message }}
+
+          ### What's Included
+          - Fluxdesk application (Windows, Linux)
+          - ngrok (latest, bundled per platform)
+          - ADB platform-tools (installed on Windows via setup wizard; bundled on Linux)
+
+          ### Download
+          | Platform | File | ADB |
+          |---|---|---|
+          | Windows | `Fluxdesk_Setup.exe` | Installed automatically by setup wizard |
+          | Linux | `Fluxdesk-linux-x64.tar.gz` | Bundled as `./adb` |
+
+          ### System Requirements
+          - Windows 10 or later / Ubuntu 20.04+
+          - .NET 10 Runtime (self-contained, no install required)
+          - 4GB RAM minimum
+        draft: false
+        prerelease: false
+        files: |
+          ./artifacts/windows-installer/Fluxdesk_Setup.exe
+          ./artifacts/linux-package/Fluxdesk-linux-x64.tar.gz
+
+    - name: Update Latest Release
+      uses: softprops/action-gh-release@v2
+      with:
+        repository: Raoufbaa/Fluxdesk-Releases
+        token: ${{ secrets.GITHUB_TOKEN }}
+        tag_name: latest
+        name: "Latest Development Build"
+        body: |
+          ## ⚡ Latest Fluxdesk Build
+
+          This is the most recent build from the main branch.
+
+          **Version:** ${{ steps.tag_version.outputs.version }}
+          **Build Date:** ${{ needs.get-commit-info.outputs.timestamp }}
+          **Commit:** ${{ needs.get-commit-info.outputs.sha }}
+
+          ### What's Included
+          - Fluxdesk application (Windows, Linux)
+          - ngrok (latest, bundled per platform)
+          - ADB platform-tools (installed on Windows via setup wizard; bundled on Linux)
+
+          ### ⚠️ Note
+          This is a development build. For stable releases, check the other release versions.
+
+          ### Download
+          - **Windows:** `Fluxdesk_Setup.exe`
+          - **Linux:** `Fluxdesk-linux-x64.tar.gz`
+        draft: false
+        prerelease: true
+        files: |
+          ./artifacts/windows-installer/Fluxdesk_Setup.exe
+          ./artifacts/linux-package/Fluxdesk-linux-x64.tar.gz
+
+    - name: Upload Combined Installer Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Fluxdesk-Installer-${{ steps.tag_version.outputs.version }}
+        path: |
+          ./artifacts/windows-installer/Fluxdesk_Setup.exe
+          ./artifacts/linux-package/Fluxdesk-linux-x64.tar.gz
+        retention-days: 90
