@@ -18,6 +18,7 @@ jobs:
       sha: ${{ steps.info.outputs.sha }}
       message: ${{ steps.info.outputs.message }}
       timestamp: ${{ steps.info.outputs.timestamp }}
+      version: ${{ steps.info.outputs.version }}
     steps:
       - name: Check RELEASES_PAT secret
         run: |
@@ -39,6 +40,13 @@ jobs:
         run: |
           SHA=$(git rev-parse HEAD)
           TIMESTAMP=$(git log -1 --format=%cI)
+          
+          # Extract version from Fluxdesk.csproj
+          VERSION=$(sed -n 's/.*<Version>\(.*\)<\/Version>.*/\1/p' Fluxdesk.csproj | tr -d '[:space:]')
+          if [ -z "$VERSION" ]; then
+            VERSION="1.0.0"
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           
           echo "sha=$SHA" >> "$GITHUB_OUTPUT"
           echo "timestamp=$TIMESTAMP" >> "$GITHUB_OUTPUT"
@@ -176,8 +184,8 @@ jobs:
     - name: Generate version tag
       id: tag_version
       run: |
-        run_number="${{ github.run_number }}"
-        version="v1.2.${run_number}"
+        # Use the version extracted from the Fluxdesk.csproj file in the get-commit-info job
+        version="v${{ needs.get-commit-info.outputs.version }}"
         echo "version=$version" >> $GITHUB_OUTPUT
         echo "Generated version: $version"
 
