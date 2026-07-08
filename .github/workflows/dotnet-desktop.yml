@@ -176,6 +176,39 @@ jobs:
       contents: write
 
     steps:
+    - name: Checkout Releases Repo
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Update version.json
+      run: |
+        python3 -c "
+        import json, sys
+        version = sys.argv[1]
+        parts = version.split('.')
+        major_minor = '.'.join(parts[:2])
+        patch = int(parts[2])
+        supported = [f'{major_minor}.{i}' for i in range(patch - 5, patch + 1)]
+        with open('version.json', 'r') as f:
+            data = json.load(f)
+        data['SupportedVersions'] = supported
+        with open('version.json', 'w') as f:
+            json.dump(data, f, indent=2)
+        " "${{ needs.get-commit-info.outputs.version }}"
+
+    - name: Commit and Push version.json
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add version.json
+        if git diff --quiet && git diff --staged --quiet; then
+          echo "No changes in version.json"
+        else
+          git commit -m "Update version.json for release ${{ needs.get-commit-info.outputs.version }}"
+          git push
+        fi
+
     - name: Download all artifacts
       uses: actions/download-artifact@v4
       with:
