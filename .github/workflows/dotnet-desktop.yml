@@ -179,6 +179,7 @@ jobs:
     - name: Checkout Releases Repo
       uses: actions/checkout@v4
       with:
+        token: ${{ secrets.RELEASES_PAT }}
         fetch-depth: 0
 
     - name: Update version.json
@@ -192,6 +193,7 @@ jobs:
         supported = [f'{major_minor}.{i}' for i in range(patch - 5, patch + 1)]
         with open('version.json', 'r') as f:
             data = json.load(f)
+        data['LatestVersion'] = version
         data['SupportedVersions'] = supported
         with open('version.json', 'w') as f:
             json.dump(data, f, indent=2)
